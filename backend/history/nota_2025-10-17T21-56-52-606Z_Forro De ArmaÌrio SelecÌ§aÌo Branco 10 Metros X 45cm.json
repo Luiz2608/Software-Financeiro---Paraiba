@@ -1,0 +1,129 @@
+{
+  "id": "2025-10-17T21-56-52-606Z",
+  "fileName": "Forro De ArmaÌrio SelecÌ§aÌo Branco 10 Metros X 45cm.pdf",
+  "processedAt": "2025-10-17T21:56:52.606Z",
+  "data": {
+    "success": true,
+    "dadosExtraidos": {
+      "fornecedor": {
+        "razaoSocial": "IDEALIZA - COMERCIO DE UTILIDADES LTDA",
+        "fantasia": "IDEALIZA - COMERCIO DE UTILIDADES",
+        "cnpj": "10.750.458/0001-11",
+        "tipo": "PJ",
+        "endereco": "Rua Humberto de Campos, 228, COLETA o - Sao Jose, Sao Caetano do Sul, SP"
+      },
+      "cliente": {
+        "nome": "MUNDO DOS EPIS",
+        "cpf": "",
+        "cnpj": "28.274.956/0001-09",
+        "tipo": "PJ",
+        "endereco": "Avenida Onias Jose Borges, 1490 - Nao consta, Santa Helena de Goias/GO"
+      },
+      "numeroNotaFiscal": "000.598.480",
+      "dataEmissao": "10/12/2024",
+      "valorFrete": 0,
+      "produtos": [
+        {
+          "descricao": "Forro De Armario Selecao Branco 10 Metros X 45cm",
+          "quantidade": 1,
+          "valorUnitario": 69.9,
+          "valorTotal": 69.9
+        }
+      ],
+      "quantidadeParcelas": 1,
+      "parcelas": [
+        {
+          "dataVencimento": "N/A",
+          "valor": 69.9
+        }
+      ],
+      "valorTotal": 69.9,
+      "classificacaoDespesa": [
+        "MANUTENCAO_OPERACAO"
+      ],
+      "naturezaOperacao": "Venda de mercadorias",
+      "tipoConta": "ARECEBER"
+    },
+    "processamento": {
+      "mensagens": [
+        {
+          "id": 1,
+          "texto": "🚀 Iniciando processamento de conta a pagar...",
+          "timestamp": "2025-10-17T21:56:52.471Z"
+        },
+        {
+          "id": 2,
+          "texto": "🔍 Verificando FORNECEDOR no banco de dados...",
+          "timestamp": "2025-10-17T21:56:52.473Z"
+        },
+        {
+          "id": 3,
+          "texto": "FORNECEDOR:\nIDEALIZA - COMERCIO DE UTILIDADES LTDA\nCNPJ: 10.750.458/0001-11\nEXISTE - ID: 14",
+          "timestamp": "2025-10-17T21:56:52.519Z"
+        },
+        {
+          "id": 4,
+          "texto": "🔍 Verificando FATURADO no banco de dados...",
+          "timestamp": "2025-10-17T21:56:52.520Z"
+        },
+        {
+          "id": 5,
+          "texto": "FATURADO:\nMUNDO DOS EPIS\nCPF: N/A\nEXISTE - ID: 15",
+          "timestamp": "2025-10-17T21:56:52.524Z"
+        },
+        {
+          "id": 6,
+          "texto": "🔍 Verificando DESPESA: MANUTENCAO_OPERACAO",
+          "timestamp": "2025-10-17T21:56:52.525Z"
+        },
+        {
+          "id": 7,
+          "texto": "DESPESA:\nMANUTENCAO_OPERACAO\nEXISTE - ID: 6",
+          "timestamp": "2025-10-17T21:56:52.532Z"
+        },
+        {
+          "id": 8,
+          "texto": "💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...",
+          "timestamp": "2025-10-17T21:56:52.535Z"
+        },
+        {
+          "id": 9,
+          "texto": "✅ MOVIMENTO CRIADO - ID: 63",
+          "timestamp": "2025-10-17T21:56:52.571Z"
+        },
+        {
+          "id": 10,
+          "texto": "✅ CLASSIFICAÇÕES VINCULADAS - 1 categorias",
+          "timestamp": "2025-10-17T21:56:52.590Z"
+        },
+        {
+          "id": 11,
+          "texto": "📅 Criando parcelas...",
+          "timestamp": "2025-10-17T21:56:52.590Z"
+        },
+        {
+          "id": 12,
+          "texto": "✅ PARCELAS CRIADAS - 1 parcelas",
+          "timestamp": "2025-10-17T21:56:52.605Z"
+        },
+        {
+          "id": 13,
+          "texto": "🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 63",
+          "timestamp": "2025-10-17T21:56:52.605Z"
+        }
+      ],
+      "etapas": {
+        "fornecedor": "CRIADO - ID: 14",
+        "faturado": "CRIADO - ID: 15",
+        "despesa": "CRIADAS - IDs: 6",
+        "movimento": "CRIADO - ID: 63"
+      },
+      "resumo": "REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 63"
+    },
+    "metadata": {
+      "fileName": "Forro De ArmaÌrio SelecÌ§aÌo Branco 10 Metros X 45cm.pdf",
+      "processedAt": "2025-10-17T21:56:52.606Z",
+      "processadoPor": "Sistema Inteligente de Contas a Pagar"
+    }
+  }
+}

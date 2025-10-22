@@ -1,0 +1,155 @@
+{
+  "id": "2025-10-17T21-06-37-409Z",
+  "originalFileName": "arquivo_desconhecido.pdf",
+  "processedAt": "2025-10-17T21:06:37.409Z",
+  "data": {
+    "sucesso": true,
+    "idMovimento": 52,
+    "idFornecedor": 7,
+    "idFaturado": 8,
+    "idsClassificacoes": [
+      7
+    ],
+    "mensagens": [
+      {
+        "id": 1,
+        "texto": "🚀 Iniciando processamento de conta a pagar...",
+        "timestamp": "2025-10-17T21:06:37.281Z"
+      },
+      {
+        "id": 2,
+        "texto": "🔍 Verificando FORNECEDOR no banco de dados...",
+        "timestamp": "2025-10-17T21:06:37.281Z"
+      },
+      {
+        "id": 3,
+        "texto": "FORNECEDOR:\nCONDOR ATACADISTA DE MATERIAIS PARA CONSTRUCAO S/A\nCNPJ: 03.261.204/0001-74\nNÃO EXISTE",
+        "timestamp": "2025-10-17T21:06:37.331Z"
+      },
+      {
+        "id": 4,
+        "texto": "✅ FORNECEDOR CRIADO - ID: 7",
+        "timestamp": "2025-10-17T21:06:37.355Z"
+      },
+      {
+        "id": 5,
+        "texto": "🔍 Verificando FATURADO no banco de dados...",
+        "timestamp": "2025-10-17T21:06:37.356Z"
+      },
+      {
+        "id": 6,
+        "texto": "FATURADO:\nISVI FABIO RODRIGUES\nCPF: N/A\nNÃO EXISTE",
+        "timestamp": "2025-10-17T21:06:37.359Z"
+      },
+      {
+        "id": 7,
+        "texto": "✅ FATURADO CRIADO - ID: 8",
+        "timestamp": "2025-10-17T21:06:37.365Z"
+      },
+      {
+        "id": 8,
+        "texto": "🔍 Verificando DESPESA: INFRAESTRUTURA_UTILIDADES",
+        "timestamp": "2025-10-17T21:06:37.365Z"
+      },
+      {
+        "id": 9,
+        "texto": "DESPESA:\nINFRAESTRUTURA_UTILIDADES\nNÃO EXISTE",
+        "timestamp": "2025-10-17T21:06:37.369Z"
+      },
+      {
+        "id": 10,
+        "texto": "✅ DESPESA CRIADA - ID: 7",
+        "timestamp": "2025-10-17T21:06:37.378Z"
+      },
+      {
+        "id": 11,
+        "texto": "💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...",
+        "timestamp": "2025-10-17T21:06:37.378Z"
+      },
+      {
+        "id": 12,
+        "texto": "✅ MOVIMENTO CRIADO - ID: 52",
+        "timestamp": "2025-10-17T21:06:37.389Z"
+      },
+      {
+        "id": 13,
+        "texto": "✅ CLASSIFICAÇÕES VINCULADAS - 1 categorias",
+        "timestamp": "2025-10-17T21:06:37.399Z"
+      },
+      {
+        "id": 14,
+        "texto": "📅 Criando parcelas...",
+        "timestamp": "2025-10-17T21:06:37.400Z"
+      },
+      {
+        "id": 15,
+        "texto": "✅ PARCELAS CRIADAS - 1 parcelas",
+        "timestamp": "2025-10-17T21:06:37.408Z"
+      },
+      {
+        "id": 16,
+        "texto": "🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 52",
+        "timestamp": "2025-10-17T21:06:37.409Z"
+      }
+    ],
+    "dadosNota": {
+      "fornecedor": {
+        "razaoSocial": "CONDOR ATACADISTA DE MATERIAIS PARA CONSTRUCAO S/A",
+        "fantasia": "CONDOR ATACADISTA DE MATERIAIS PARA CONSTRUCAO",
+        "cnpj": "03.261.204/0001-74",
+        "tipo": "PJ",
+        "endereco": "SCIA QUADRA 13, CONJ. 01, 0 - LT.08/09, CIDADE DO AUTOMOVEL, BRASILIA/DF"
+      },
+      "cliente": {
+        "nome": "ISVI FABIO RODRIGUES",
+        "cpf": "42.716.033/0001-82",
+        "cnpj": "",
+        "tipo": "PF",
+        "endereco": "AVENIDA C17 QUADRA 177; LOTE 02, 501 - ., SETOR SUDOESTE, GOIANIA/GO"
+      },
+      "numeroNotaFiscal": "000.289.498",
+      "dataEmissao": "11/02/2025",
+      "valorFrete": 0,
+      "produtos": [
+        {
+          "descricao": "ABRACADEIRA NYLON PR 400X4,8MM",
+          "quantidade": 100,
+          "valorUnitario": 1.24,
+          "valorTotal": 124
+        },
+        {
+          "descricao": "ABRACADEIRA NYLON PR 280X4,8MM",
+          "quantidade": 30,
+          "valorUnitario": 8.14,
+          "valorTotal": 244.2
+        },
+        {
+          "descricao": "CORDA TRANC SEDA PET VD 14MM 15KG",
+          "quantidade": 4,
+          "valorUnitario": 192.74,
+          "valorTotal": 770.96
+        },
+        {
+          "descricao": "CORDA TRANC SEDA PET ECO VD 08MM",
+          "quantidade": 5,
+          "valorUnitario": 183.32,
+          "valorTotal": 916.6
+        }
+      ],
+      "quantidadeParcelas": 1,
+      "parcelas": [
+        {
+          "dataVencimento": "11/03/2025",
+          "valor": 2059.76
+        }
+      ],
+      "valorTotal": 2059.76,
+      "classificacaoDespesa": [
+        "INFRAESTRUTURA_UTILIDADES"
+      ]
+    },
+    "nomeArquivo": "NF 2 Paga.pdf",
+    "fileName": "NF 2 Paga.pdf",
+    "processedAt": "2025-10-17T21:06:37.409Z"
+  }
+}

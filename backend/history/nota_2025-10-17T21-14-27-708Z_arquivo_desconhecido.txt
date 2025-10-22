@@ -1,0 +1,122 @@
+{
+  "id": "2025-10-17T21-14-27-708Z",
+  "originalFileName": "arquivo_desconhecido.pdf",
+  "processedAt": "2025-10-17T21:14:27.708Z",
+  "data": {
+    "sucesso": true,
+    "idMovimento": 56,
+    "idFornecedor": 1,
+    "idFaturado": 2,
+    "idsClassificacoes": [
+      5
+    ],
+    "mensagens": [
+      {
+        "id": 1,
+        "texto": "🚀 Iniciando processamento de conta a pagar...",
+        "timestamp": "2025-10-17T21:14:27.669Z"
+      },
+      {
+        "id": 2,
+        "texto": "🔍 Verificando FORNECEDOR no banco de dados...",
+        "timestamp": "2025-10-17T21:14:27.669Z"
+      },
+      {
+        "id": 3,
+        "texto": "FORNECEDOR:\nCTVA PROTECAO DE CULTIVOS LTDA\nCNPJ: 47.180.625/0058-81\nEXISTE - ID: 1",
+        "timestamp": "2025-10-17T21:14:27.673Z"
+      },
+      {
+        "id": 4,
+        "texto": "🔍 Verificando FATURADO no banco de dados...",
+        "timestamp": "2025-10-17T21:14:27.674Z"
+      },
+      {
+        "id": 5,
+        "texto": "FATURADO:\nBELTRANO DE SOUZA\nCPF: N/A\nEXISTE - ID: 2",
+        "timestamp": "2025-10-17T21:14:27.677Z"
+      },
+      {
+        "id": 6,
+        "texto": "🔍 Verificando DESPESA: INSUMOS_AGRICOLAS",
+        "timestamp": "2025-10-17T21:14:27.677Z"
+      },
+      {
+        "id": 7,
+        "texto": "DESPESA:\nINSUMOS_AGRICOLAS\nEXISTE - ID: 5",
+        "timestamp": "2025-10-17T21:14:27.680Z"
+      },
+      {
+        "id": 8,
+        "texto": "💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...",
+        "timestamp": "2025-10-17T21:14:27.680Z"
+      },
+      {
+        "id": 9,
+        "texto": "✅ MOVIMENTO CRIADO - ID: 56",
+        "timestamp": "2025-10-17T21:14:27.687Z"
+      },
+      {
+        "id": 10,
+        "texto": "✅ CLASSIFICAÇÕES VINCULADAS - 1 categorias",
+        "timestamp": "2025-10-17T21:14:27.698Z"
+      },
+      {
+        "id": 11,
+        "texto": "📅 Criando parcelas...",
+        "timestamp": "2025-10-17T21:14:27.698Z"
+      },
+      {
+        "id": 12,
+        "texto": "✅ PARCELAS CRIADAS - 1 parcelas",
+        "timestamp": "2025-10-17T21:14:27.707Z"
+      },
+      {
+        "id": 13,
+        "texto": "🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 56",
+        "timestamp": "2025-10-17T21:14:27.707Z"
+      }
+    ],
+    "dadosNota": {
+      "fornecedor": {
+        "razaoSocial": "CTVA PROTECAO DE CULTIVOS LTDA",
+        "fantasia": "CTVA PROTECAO DE CULTIVOS",
+        "cnpj": "47.180.625/0058-81",
+        "tipo": "PJ",
+        "endereco": "AV EURIPEDES MENEZES, S/N - QUADRA004, PQ IND AP VICE-PRESIDENTE JOSE D, APARECIDA DE GOIANIA/GO"
+      },
+      "cliente": {
+        "nome": "BELTRANO DE SOUZA",
+        "cpf": "111.111.111-11",
+        "cnpj": "",
+        "tipo": "PF",
+        "endereco": "ROD.GO 174, KM 72, S/N, ZONA RURAL, MONTIVIDIU/GO"
+      },
+      "numeroNotaFiscal": "000.012.776",
+      "dataEmissao": "30/04/2025",
+      "valorFrete": 0,
+      "produtos": [
+        {
+          "descricao": "VESSARYA BOMBONA 10L FUNGICIDA",
+          "quantidade": 1120,
+          "valorUnitario": 180.25,
+          "valorTotal": 201876.54
+        }
+      ],
+      "quantidadeParcelas": 1,
+      "parcelas": [
+        {
+          "dataVencimento": "05/05/2025",
+          "valor": 163520
+        }
+      ],
+      "valorTotal": 163520,
+      "classificacaoDespesa": [
+        "INSUMOS_AGRICOLAS"
+      ]
+    },
+    "nomeArquivo": "danfe - Defensivos.pdf",
+    "fileName": "danfe - Defensivos.pdf",
+    "processedAt": "2025-10-17T21:14:27.708Z"
+  }
+}

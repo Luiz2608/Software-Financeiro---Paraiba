@@ -1,0 +1,944 @@
+.invoice-processor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.history-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.history-button {
+  padding: 12px 24px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.history-button:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.upload-form {
+  margin: 30px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.file-input-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+}
+
+.file-input {
+  position: absolute;
+  left: -9999px;
+}
+
+.file-label {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: #ffffff;
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  font-weight: 500;
+  color: #007bff;
+}
+
+.file-label:hover {
+  background-color: #e3f2fd;
+  border-color: #0056b3;
+}
+
+.process-button {
+  padding: 15px 30px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  min-width: 200px;
+}
+
+.process-button:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.process-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ===== ESTILOS DO AGENTE INTELIGENTE ===== */
+
+/* Painel de Mensagens do Agente */
+.agent-messages-panel {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  color: white;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agent-messages-panel h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.agent-messages-container {
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Mensagens individuais do agente */
+.agent-message {
+  background: rgba(255, 255, 255, 0.95);
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  color: #2c3e50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.agent-message:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.agent-message.error {
+  border-left-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.05);
+}
+
+.agent-message.success {
+  border-left-color: #27ae60;
+  background: rgba(39, 174, 96, 0.05);
+}
+
+.agent-message-time {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.agent-message-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* Indicador de processamento */
+.agent-processing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.agent-spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: agentSpin 1s linear infinite;
+}
+
+@keyframes agentSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Indicador do Agente nos resultados */
+.agent-indicator {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  margin-left: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.agent-id {
+  color: #667eea;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+/* Scrollbar personalizada para o painel do agente */
+.agent-messages-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.agent-messages-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.agent-messages-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.agent-messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  border-left: 4px solid #dc3545;
+}
+
+.error-message.nfe-invalida {
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+
+.error-message::before {
+  content: "❌ ";
+  margin-right: 8px;
+}
+
+.error-message.nfe-invalida::before {
+  content: "⚠️ ";
+}
+
+.result-container {
+  margin-top: 40px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.result-container h2 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary-section,
+.supplier-section,
+.client-section,
+.products-section,
+.parcelas-section,
+.classification-section {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border-left: 4px solid #007bff;
+  transition: all 0.3s ease;
+}
+
+.summary-section:hover,
+.supplier-section:hover,
+.client-section:hover,
+.products-section:hover,
+.parcelas-section:hover,
+.classification-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.summary-section h3,
+.supplier-section h3,
+.client-section h3,
+.products-section h3,
+.parcelas-section h3,
+.classification-section h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #28a745;
+  transition: all 0.3s ease;
+}
+
+.summary-item:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.summary-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.summary-value {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.supplier-info,
+.client-info,
+.classification-info {
+  line-height: 1.8;
+}
+
+/* ESTILOS ATUALIZADOS PARA ENDEREÇO */
+.supplier-info p,
+.client-info p {
+  margin: 10px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f3f4;
+  word-wrap: break-word;
+  line-height: 1.6;
+}
+
+.supplier-info strong,
+.client-info strong {
+  color: #495057;
+  min-width: 140px;
+  display: inline-block;
+  vertical-align: top;
+  font-weight: 600;
+}
+
+/* Estilo específico para o endereço (permite quebra de linha) */
+.supplier-info p:last-child,
+.client-info p:last-child {
+  border-bottom: none;
+}
+
+.address-line {
+  display: inline-block;
+  width: calc(100% - 140px);
+  vertical-align: top;
+  color: #2c3e50;
+  font-weight: 400;
+}
+
+.classification-info p {
+  margin: 8px 0;
+  padding: 5px 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.classification-info strong {
+  color: #495057;
+  min-width: 120px;
+  display: inline-block;
+}
+
+.products-table,
+.parcelas-table {
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: white;
+}
+
+th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+  padding: 15px;
+  text-align: left;
+  border: none;
+}
+
+td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+.number {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+.json-details {
+  margin-top: 30px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.json-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #007bff;
+  margin-bottom: 15px;
+  font-size: 16px;
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #007bff;
+  transition: all 0.3s ease;
+}
+
+.json-details summary:hover {
+  background: #e3f2fd;
+}
+
+.result-json {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  border-radius: 6px;
+  padding: 20px;
+  overflow: auto;
+  max-height: 400px;
+  font-family: 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid #4a5568;
+}
+
+/* Indicador visual para notas do histórico */
+.result-from-history {
+  border-left: 6px solid #ffc107 !important;
+  background: #fffbf0 !important;
+}
+
+.result-from-history h3 {
+  color: #856404;
+}
+
+.history-indicator {
+  display: inline-block;
+  background: #ffc107;
+  color: #856404;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-left: 10px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .invoice-processor {
+    padding: 15px;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  table {
+    font-size: 12px;
+  }
+  
+  th, td {
+    padding: 10px;
+  }
+  
+  .result-container {
+    padding: 20px;
+    margin: 20px -15px;
+    border-radius: 0;
+  }
+  
+  .file-label {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .process-button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .history-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  /* Ajustes para mobile - endereço */
+  .supplier-info p,
+  .client-info p {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .supplier-info strong,
+  .client-info strong {
+    min-width: 100%;
+    margin-bottom: 5px;
+  }
+  
+  .address-line {
+    width: 100%;
+  }
+  
+  /* Ajustes para o agente em mobile */
+  .agent-messages-panel {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 10px;
+  }
+  
+  .agent-messages-container {
+    max-height: 200px;
+  }
+  
+  .agent-message {
+    padding: 0.75rem;
+  }
+  
+  .agent-indicator {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    display: block;
+    text-align: center;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .result-container h2 {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .invoice-processor {
+    padding: 10px;
+  }
+  
+  th, td {
+    padding: 8px;
+    font-size: 11px;
+  }
+  
+  .summary-item {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .supplier-info strong,
+  .client-info strong,
+  .classification-info strong {
+    min-width: 100px;
+    font-size: 14px;
+  }
+  
+  .history-button {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  /* Ajustes extras para mobile muito pequeno */
+  .supplier-section,
+  .client-section,
+  .products-section,
+  .parcelas-section,
+  .classification-section {
+    padding: 15px;
+  }
+  
+  .supplier-info p,
+  .client-info p {
+    margin: 8px 0;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+  
+  /* Ajustes finos para o agente */
+  .agent-messages-panel h3 {
+    font-size: 1.1rem;
+  }
+  
+  .agent-message-text {
+    font-size: 0.8rem;
+  }
+  
+  .agent-processing-indicator {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Scrollbar personalizada para tabelas */
+.products-table::-webkit-scrollbar,
+.parcelas-table::-webkit-scrollbar {
+  height: 8px;
+}
+
+.products-table::-webkit-scrollbar-track,
+.parcelas-table::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.products-table::-webkit-scrollbar-thumb,
+.parcelas-table::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.products-table::-webkit-scrollbar-thumb:hover,
+.parcelas-table::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Estados de loading */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Melhorias de acessibilidade */
+.file-input:focus + .file-label {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.process-button:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+.agent-messages-panel:focus-within {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .summary-item {
+    border: 1px solid #000;
+  }
+  
+  .supplier-info p,
+  .client-info p {
+    border-bottom: 2px solid #000;
+  }
+  
+  .agent-message {
+    border: 1px solid #000;
+  }
+  
+  .agent-indicator {
+    border: 2px solid #000;
+  }
+}
+
+/* Animações de entrada para o painel do agente */
+.agent-messages-panel {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efeito de brilho para mensagens importantes */
+.agent-message.success {
+  position: relative;
+  overflow: hidden;
+}
+
+.agent-message.success::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(39, 174, 96, 0.1),
+    transparent
+  );
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.info-value.warning {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+.info-value.success {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+/* Estilos para tipos de conta */
+.conta-pagar {
+  color: #e74c3c;
+  font-weight: bold;
+  background-color: #fdedec;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #fadbd8;
+}
+
+.conta-receber {
+  color: #27ae60;
+  font-weight: bold;
+  background-color: #eafaf1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d5f5e3;
+}
+
+/* Ajuste no grid para mais colunas */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Estilos para valores de informação */
+.info-value.warning {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+.info-value.success {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+/* Estilos para tipos de conta */
+.conta-pagar {
+  color: #e74c3c;
+  font-weight: bold;
+  background-color: #fdedec;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #fadbd8;
+}
+
+.conta-receber {
+  color: #27ae60;
+  font-weight: bold;
+  background-color: #eafaf1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d5f5e3;
+}
+
+/* Ajuste no grid para mais colunas */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Estilos para valores de informação */
+.info-value.warning {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+.info-value.success {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+/* Estilos para o histórico */
+.history-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.history-item:hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+}
+
+.history-item-content {
+  display: flex;
+  justify-content: between;
+  align-items: start;
+}
+
+.history-item-main {
+  flex: 1;
+}
+
+.history-item-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 10px;
+}
+
+.history-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 8px;
+}
+
+.history-details span {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.file-name {
+  color: #888;
+  font-size: 0.9em;
+  margin: 5px 0;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #f8f9fa;
+}

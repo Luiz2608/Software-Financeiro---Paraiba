@@ -1,0 +1,176 @@
+{
+  "id": "2025-10-17T20-54-42-427Z",
+  "originalFileName": "arquivo_desconhecido.pdf",
+  "processedAt": "2025-10-17T20:54:42.427Z",
+  "data": {
+    "sucesso": true,
+    "idMovimento": 51,
+    "idFornecedor": 3,
+    "idFaturado": 4,
+    "idsClassificacoes": [
+      6
+    ],
+    "mensagens": [
+      {
+        "id": 1,
+        "texto": "🚀 Iniciando processamento de conta a pagar...",
+        "timestamp": "2025-10-17T20:54:42.354Z"
+      },
+      {
+        "id": 2,
+        "texto": "🔍 Verificando FORNECEDOR no banco de dados...",
+        "timestamp": "2025-10-17T20:54:42.354Z"
+      },
+      {
+        "id": 3,
+        "texto": "FORNECEDOR:\nIGUACU MAQUINAS AGRICOLAS LTDA\nCNPJ: 33.656.729/0023-85\nEXISTE - ID: 3",
+        "timestamp": "2025-10-17T20:54:42.382Z"
+      },
+      {
+        "id": 4,
+        "texto": "🔍 Verificando FATURADO no banco de dados...",
+        "timestamp": "2025-10-17T20:54:42.383Z"
+      },
+      {
+        "id": 5,
+        "texto": "FATURADO:\nCICLANO DA SILVA\nCPF: N/A\nEXISTE - ID: 4",
+        "timestamp": "2025-10-17T20:54:42.386Z"
+      },
+      {
+        "id": 6,
+        "texto": "🔍 Verificando DESPESA: MANUTENCAO_OPERACAO",
+        "timestamp": "2025-10-17T20:54:42.387Z"
+      },
+      {
+        "id": 7,
+        "texto": "DESPESA:\nMANUTENCAO_OPERACAO\nEXISTE - ID: 6",
+        "timestamp": "2025-10-17T20:54:42.390Z"
+      },
+      {
+        "id": 8,
+        "texto": "💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...",
+        "timestamp": "2025-10-17T20:54:42.391Z"
+      },
+      {
+        "id": 9,
+        "texto": "✅ MOVIMENTO CRIADO - ID: 51",
+        "timestamp": "2025-10-17T20:54:42.407Z"
+      },
+      {
+        "id": 10,
+        "texto": "✅ CLASSIFICAÇÕES VINCULADAS - 1 categorias",
+        "timestamp": "2025-10-17T20:54:42.419Z"
+      },
+      {
+        "id": 11,
+        "texto": "📅 Criando parcelas...",
+        "timestamp": "2025-10-17T20:54:42.419Z"
+      },
+      {
+        "id": 12,
+        "texto": "✅ PARCELAS CRIADAS - 1 parcelas",
+        "timestamp": "2025-10-17T20:54:42.427Z"
+      },
+      {
+        "id": 13,
+        "texto": "🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 51",
+        "timestamp": "2025-10-17T20:54:42.427Z"
+      }
+    ],
+    "dadosNota": {
+      "fornecedor": {
+        "razaoSocial": "IGUACU MAQUINAS AGRICOLAS LTDA",
+        "fantasia": "IGUACU MAQUINAS AGRICOLAS",
+        "cnpj": "33.656.729/0023-85",
+        "tipo": "PJ",
+        "endereco": "R OLIVERIO OLIVIO DE OLIVEIRA, SN - NUMERO 43, ANEXO A, SERRANO PARK, MONTIVIDIU/GO"
+      },
+      "cliente": {
+        "nome": "CICLANO DA SILVA",
+        "cpf": "999.999.999-99",
+        "cnpj": "",
+        "tipo": "PF",
+        "endereco": "FAZENDA ALEGRIA, 306 RURAL, MONTIVIDIU/GO"
+      },
+      "numeroNotaFiscal": "000.084.682",
+      "dataEmissao": "19/09/2025",
+      "valorFrete": 0,
+      "produtos": [
+        {
+          "descricao": "GRAXA DE POLIUREIA MP SD 400G",
+          "quantidade": 1,
+          "valorUnitario": 180.31,
+          "valorTotal": 180.31
+        },
+        {
+          "descricao": "ANEL O",
+          "quantidade": 1,
+          "valorUnitario": 5.69,
+          "valorTotal": 5.69
+        },
+        {
+          "descricao": "KIT DA BUCHA",
+          "quantidade": 1,
+          "valorUnitario": 1204.36,
+          "valorTotal": 1204.36
+        },
+        {
+          "descricao": "APOIO",
+          "quantidade": 3,
+          "valorUnitario": 64.34,
+          "valorTotal": 193.03
+        },
+        {
+          "descricao": "ANEL",
+          "quantidade": 1,
+          "valorUnitario": 97.81,
+          "valorTotal": 97.81
+        },
+        {
+          "descricao": "ROLAMENTO DE ESFERAS",
+          "quantidade": 1,
+          "valorUnitario": 1045.39,
+          "valorTotal": 1045.39
+        },
+        {
+          "descricao": "ROLAMENTO DE ROLOS CONICOS",
+          "quantidade": 1,
+          "valorUnitario": 995,
+          "valorTotal": 995
+        },
+        {
+          "descricao": "ESTOPA",
+          "quantidade": 1,
+          "valorUnitario": 6.28,
+          "valorTotal": 6.28
+        },
+        {
+          "descricao": "PANO PARA LIMPEZA",
+          "quantidade": 2,
+          "valorUnitario": 4.1,
+          "valorTotal": 8.2
+        },
+        {
+          "descricao": "LIMPADOR PREMIUM 115",
+          "quantidade": 1,
+          "valorUnitario": 118.6,
+          "valorTotal": 118.6
+        }
+      ],
+      "quantidadeParcelas": 1,
+      "parcelas": [
+        {
+          "dataVencimento": "17/10/2025",
+          "valor": 3086.75
+        }
+      ],
+      "valorTotal": 3086.75,
+      "classificacaoDespesa": [
+        "MANUTENCAO_OPERACAO"
+      ]
+    },
+    "nomeArquivo": "danfe produtos.pdf",
+    "fileName": "danfe produtos.pdf",
+    "processedAt": "2025-10-17T20:54:42.427Z"
+  }
+}

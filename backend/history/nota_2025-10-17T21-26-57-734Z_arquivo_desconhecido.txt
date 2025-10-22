@@ -1,0 +1,133 @@
+{
+  "id": "2025-10-17T21-26-57-734Z",
+  "originalFileName": "arquivo_desconhecido.pdf",
+  "processedAt": "2025-10-17T21:26:57.734Z",
+  "data": {
+    "sucesso": true,
+    "idMovimento": 61,
+    "idFornecedor": 14,
+    "idFaturado": 15,
+    "idsClassificacoes": [
+      6
+    ],
+    "mensagens": [
+      {
+        "id": 1,
+        "texto": "🚀 Iniciando processamento de conta a pagar...",
+        "timestamp": "2025-10-17T21:26:57.627Z"
+      },
+      {
+        "id": 2,
+        "texto": "🔍 Verificando FORNECEDOR no banco de dados...",
+        "timestamp": "2025-10-17T21:26:57.628Z"
+      },
+      {
+        "id": 3,
+        "texto": "FORNECEDOR:\nIDEALIZA - COMERCIO DE UTILIDADES LTDA\nCNPJ: 10.750.458/0001-11\nNÃO EXISTE",
+        "timestamp": "2025-10-17T21:26:57.676Z"
+      },
+      {
+        "id": 4,
+        "texto": "✅ FORNECEDOR CRIADO - ID: 14",
+        "timestamp": "2025-10-17T21:26:57.689Z"
+      },
+      {
+        "id": 5,
+        "texto": "🔍 Verificando FATURADO no banco de dados...",
+        "timestamp": "2025-10-17T21:26:57.689Z"
+      },
+      {
+        "id": 6,
+        "texto": "FATURADO:\nMUNDO DOS EPIS\nCPF: N/A\nNÃO EXISTE",
+        "timestamp": "2025-10-17T21:26:57.692Z"
+      },
+      {
+        "id": 7,
+        "texto": "✅ FATURADO CRIADO - ID: 15",
+        "timestamp": "2025-10-17T21:26:57.699Z"
+      },
+      {
+        "id": 8,
+        "texto": "🔍 Verificando DESPESA: MANUTENCAO_OPERACAO",
+        "timestamp": "2025-10-17T21:26:57.699Z"
+      },
+      {
+        "id": 9,
+        "texto": "DESPESA:\nMANUTENCAO_OPERACAO\nEXISTE - ID: 6",
+        "timestamp": "2025-10-17T21:26:57.702Z"
+      },
+      {
+        "id": 10,
+        "texto": "💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...",
+        "timestamp": "2025-10-17T21:26:57.703Z"
+      },
+      {
+        "id": 11,
+        "texto": "✅ MOVIMENTO CRIADO - ID: 61",
+        "timestamp": "2025-10-17T21:26:57.713Z"
+      },
+      {
+        "id": 12,
+        "texto": "✅ CLASSIFICAÇÕES VINCULADAS - 1 categorias",
+        "timestamp": "2025-10-17T21:26:57.725Z"
+      },
+      {
+        "id": 13,
+        "texto": "📅 Criando parcelas...",
+        "timestamp": "2025-10-17T21:26:57.725Z"
+      },
+      {
+        "id": 14,
+        "texto": "✅ PARCELAS CRIADAS - 1 parcelas",
+        "timestamp": "2025-10-17T21:26:57.733Z"
+      },
+      {
+        "id": 15,
+        "texto": "🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 61",
+        "timestamp": "2025-10-17T21:26:57.734Z"
+      }
+    ],
+    "dadosNota": {
+      "fornecedor": {
+        "razaoSocial": "IDEALIZA - COMERCIO DE UTILIDADES LTDA",
+        "fantasia": "IDEALIZA - COMERCIO DE UTILIDADES",
+        "cnpj": "10.750.458/0001-11",
+        "tipo": "PJ",
+        "endereco": "Rua Humberto de Campos, 228, COLETA o - Sao Jose, Sao Caetano do Sul, SP"
+      },
+      "cliente": {
+        "nome": "MUNDO DOS EPIS",
+        "cpf": "",
+        "cnpj": "28.274.956/0001-09",
+        "tipo": "PJ",
+        "endereco": "Avenida Onias Jose Borges, 1490 - Nao consta, Santa Helena de Goias/GO"
+      },
+      "numeroNotaFiscal": "000.598.480",
+      "dataEmissao": "10/12/2024",
+      "valorFrete": 0,
+      "produtos": [
+        {
+          "descricao": "Forro De Armario Selecao Branco 10 Metros X 45cm",
+          "quantidade": 1,
+          "valorUnitario": 69.9,
+          "valorTotal": 69.9
+        }
+      ],
+      "quantidadeParcelas": 0,
+      "parcelas": [
+        {
+          "numeroParcela": 1,
+          "dataVencimento": "2025-10-17",
+          "valor": 69.9
+        }
+      ],
+      "valorTotal": 69.9,
+      "classificacaoDespesa": [
+        "MANUTENCAO_OPERACAO"
+      ]
+    },
+    "nomeArquivo": "Forro De ArmaÌrio SelecÌ§aÌo Branco 10 Metros X 45cm.pdf",
+    "fileName": "Forro De ArmaÌrio SelecÌ§aÌo Branco 10 Metros X 45cm.pdf",
+    "processedAt": "2025-10-17T21:26:57.734Z"
+  }
+}

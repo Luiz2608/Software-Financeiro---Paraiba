@@ -1,0 +1,122 @@
+{
+  "id": "2025-10-17T21-19-40-232Z",
+  "originalFileName": "arquivo_desconhecido.pdf",
+  "processedAt": "2025-10-17T21:19:40.232Z",
+  "data": {
+    "sucesso": true,
+    "idMovimento": 57,
+    "idFornecedor": 10,
+    "idFaturado": 11,
+    "idsClassificacoes": [
+      7
+    ],
+    "mensagens": [
+      {
+        "id": 1,
+        "texto": "🚀 Iniciando processamento de conta a pagar...",
+        "timestamp": "2025-10-17T21:19:40.159Z"
+      },
+      {
+        "id": 2,
+        "texto": "🔍 Verificando FORNECEDOR no banco de dados...",
+        "timestamp": "2025-10-17T21:19:40.159Z"
+      },
+      {
+        "id": 3,
+        "texto": "FORNECEDOR:\nCompanhia de Energia XYZ S.A.\nCNPJ: 00.111.222/0001-33\nEXISTE - ID: 10",
+        "timestamp": "2025-10-17T21:19:40.188Z"
+      },
+      {
+        "id": 4,
+        "texto": "🔍 Verificando FATURADO no banco de dados...",
+        "timestamp": "2025-10-17T21:19:40.188Z"
+      },
+      {
+        "id": 5,
+        "texto": "FATURADO:\nEmpresa ABC Ltda.\nCPF: N/A\nEXISTE - ID: 11",
+        "timestamp": "2025-10-17T21:19:40.192Z"
+      },
+      {
+        "id": 6,
+        "texto": "🔍 Verificando DESPESA: INFRAESTRUTURA_UTILIDADES",
+        "timestamp": "2025-10-17T21:19:40.193Z"
+      },
+      {
+        "id": 7,
+        "texto": "DESPESA:\nINFRAESTRUTURA_UTILIDADES\nEXISTE - ID: 7",
+        "timestamp": "2025-10-17T21:19:40.196Z"
+      },
+      {
+        "id": 8,
+        "texto": "💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...",
+        "timestamp": "2025-10-17T21:19:40.196Z"
+      },
+      {
+        "id": 9,
+        "texto": "✅ MOVIMENTO CRIADO - ID: 57",
+        "timestamp": "2025-10-17T21:19:40.210Z"
+      },
+      {
+        "id": 10,
+        "texto": "✅ CLASSIFICAÇÕES VINCULADAS - 1 categorias",
+        "timestamp": "2025-10-17T21:19:40.222Z"
+      },
+      {
+        "id": 11,
+        "texto": "📅 Criando parcelas...",
+        "timestamp": "2025-10-17T21:19:40.223Z"
+      },
+      {
+        "id": 12,
+        "texto": "✅ PARCELAS CRIADAS - 1 parcelas",
+        "timestamp": "2025-10-17T21:19:40.231Z"
+      },
+      {
+        "id": 13,
+        "texto": "🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 57",
+        "timestamp": "2025-10-17T21:19:40.231Z"
+      }
+    ],
+    "dadosNota": {
+      "fornecedor": {
+        "razaoSocial": "Companhia de Energia XYZ S.A.",
+        "fantasia": "Companhia de Energia XYZ",
+        "cnpj": "00.111.222/0001-33",
+        "tipo": "PJ",
+        "endereco": "Rua das Luzes, 123 - Centro, São Paulo - SP"
+      },
+      "cliente": {
+        "nome": "Empresa ABC Ltda.",
+        "cpf": "",
+        "cnpj": "44.555.666/0001-77",
+        "tipo": "PJ",
+        "endereco": "Av. das Indústrias, 456 - Distrito Industrial, São Paulo - SP"
+      },
+      "numeroNotaFiscal": "12345",
+      "dataEmissao": "23/09/2025",
+      "valorFrete": 0,
+      "produtos": [
+        {
+          "descricao": "Fornecimento de energia elétrica (Referente ao mês)",
+          "quantidade": 1,
+          "valorUnitario": 1500,
+          "valorTotal": 1500
+        }
+      ],
+      "quantidadeParcelas": 1,
+      "parcelas": [
+        {
+          "dataVencimento": "23/09/2025",
+          "valor": 1500
+        }
+      ],
+      "valorTotal": 1500,
+      "classificacaoDespesa": [
+        "INFRAESTRUTURA_UTILIDADES"
+      ]
+    },
+    "nomeArquivo": "Nota teste.pdf",
+    "fileName": "Nota teste.pdf",
+    "processedAt": "2025-10-17T21:19:40.232Z"
+  }
+}
