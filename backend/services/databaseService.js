@@ -1,4 +1,4 @@
-// services/databaseService.js - VERSÃO ATUALIZADA E CORRIGIDA
+
 const { Client } = require('pg');
 
 class DatabaseService {
@@ -25,7 +25,7 @@ class DatabaseService {
     }
   }
 
-  // ========== FUNÇÕES PRINCIPAIS CORRIGIDAS ==========
+
 
   async verificarFornecedor(razaoSocial, cnpj) {
     try {
@@ -56,7 +56,7 @@ class DatabaseService {
         ['FORNECEDOR', razaoSocial, cnpj]
       );
       
-      // CORREÇÃO: Garantir que retorna número (não string)
+    
       return Number(result.rows[0].id);
     } catch (error) {
       throw new Error('Erro ao criar fornecedor: ' + error.message);
@@ -79,7 +79,7 @@ class DatabaseService {
         ]
       );
       
-      // CORREÇÃO: Garantir que retorna número (não string)
+      
       return Number(result.rows[0].id);
     } catch (error) {
       throw new Error('Erro ao criar movimento: ' + error.message);
@@ -88,7 +88,7 @@ class DatabaseService {
 
   async criarParcelas(idMovimento, parcelas) {
     try {
-      // CORREÇÃO: Se não houver parcelas, criar uma única parcela
+      
       if (!parcelas || parcelas.length === 0) {
         const parcelaUnica = {
           numeroParcela: 1,
@@ -103,7 +103,7 @@ class DatabaseService {
       for (const parcela of parcelas) {
         const identificacao = `${idMovimento}_${parcela.numeroParcela}`;
         
-        // CORREÇÃO: Função dedicada para formatação de data
+        
         const dataVencimentoFormatada = this.formatarDataParaPostgres(parcela.dataVencimento);
         
         const result = await this.client.query(
@@ -161,7 +161,7 @@ class DatabaseService {
         ['FATURADO', nomeCompleto, cpf]
       );
       
-      // CORREÇÃO: Garantir que retorna número (não string)
+      
       return Number(result.rows[0].id);
     } catch (error) {
       throw new Error('Erro ao criar faturado: ' + error.message);
@@ -199,7 +199,7 @@ class DatabaseService {
         [tipo, descricao]
       );
       
-      // CORREÇÃO: Garantir que retorna número (não string)
+      
       return Number(result.rows[0].id);
     } catch (error) {
       throw new Error('Erro ao criar classificação: ' + error.message);
@@ -208,7 +208,7 @@ class DatabaseService {
 
   async vincularClassificacao(idMovimento, idClassificacao) {
     try {
-      // CORREÇÃO: Verificar se o vínculo já existe antes de inserir
+      
       const checkQuery = `
         SELECT 1 FROM MOVIMENTO_CLASSIFICACAO 
         WHERE ID_MOVIMENTO = $1 AND ID_CLASSIFICACAO = $2

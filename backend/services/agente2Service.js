@@ -1,4 +1,4 @@
-﻿// services/agenteService.js - VERSÃO COMPLETA CORRIGIDA
+﻿
 const databaseService = require('./databaseService');
 const { analyzeWithGemini } = require('./geminiService');
 
@@ -159,7 +159,7 @@ class AgenteService {
     }
   }
 
-  // CORREÇÃO: GARANTIR QUE A FUNÇÃO EXISTA COMO MÉTODO DA CLASSE
+  //GARANTIR QUE A FUNÇÃO EXISTA COMO MÉTODO DA CLASSE
   async analisarEProcessarNota(pdfText, nomeArquivo) {
     try {
       this.adicionarMensagem("🤖 Gemini AI analisando nota fiscal...");
