@@ -2,10 +2,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-/**
- * Normaliza strings numéricas (ex.: "1.837,18" -> 1837.18, "48,86" -> 48.86).
- * Retorna null se não for possível converter.
- */
+
 function normalizeNumber(value) {
   if (value === null || value === undefined) return null;
   if (typeof value === 'number') return value;

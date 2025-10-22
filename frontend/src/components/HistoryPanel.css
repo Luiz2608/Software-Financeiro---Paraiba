@@ -63,7 +63,7 @@
   padding: 10px;
 }
 
-/* CORREÇÃO: Estilos melhorados para os itens do histórico */
+
 .history-item {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -182,7 +182,7 @@
   font-weight: 500;
 }
 
-/* Scrollbar personalizada */
+
 .history-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -201,7 +201,7 @@
   background: #a8a8a8;
 }
 
-/* CORREÇÃO: Estilos para diferentes tipos de conta */
+
 .conta-pagar {
   color: #d32f2f;
   font-weight: 600;
@@ -212,7 +212,7 @@
   font-weight: 600;
 }
 
-/* CORREÇÃO: Estados de status */
+
 .info-value.success {
   color: #388e3c;
   font-weight: 600;
@@ -223,7 +223,7 @@
   font-weight: 600;
 }
 
-/* CORREÇÃO: Responsividade melhorada */
+
 @media (max-width: 768px) {
   .history-panel {
     width: 95%;
@@ -251,7 +251,7 @@
   }
 }
 
-/* CORREÇÃO: Animações suaves */
+
 .history-item {
   animation: fadeInUp 0.3s ease-out;
 }
@@ -267,7 +267,7 @@
   }
 }
 
-/* CORREÇÃO: Estados de foco para acessibilidade */
+
 .history-item:focus {
   outline: 2px solid #007bff;
   outline-offset: 2px;

@@ -47,13 +47,13 @@ const InvoiceProcessor = () => {
     }
   };
 
-  // CORREÇÃO: Função atualizada para lidar com notas do histórico
+  
   const handleSelectHistoryNote = (noteData) => {
     console.log('📝 Nota selecionada do histórico:', noteData);
     setShowHistory(false);
     
     if (noteData && noteData.dadosExtraidos) {
-      // CORREÇÃO: Criar a estrutura que o componente espera
+      
       setResult({
         success: true,
         processamento: noteData.processamento || {
@@ -126,14 +126,14 @@ const InvoiceProcessor = () => {
     };
   };
 
-  // CORREÇÃO: Função checkIfNewFromMessages com validação de tipo
+  
   const checkIfNewFromMessages = (tipo, id) => {
     if (!result?.processamento?.mensagens) return true;
     
     const mensagens = result.processamento.mensagens;
     
     for (const mensagem of mensagens) {
-      // CORREÇÃO: Extrair texto da mensagem (pode ser objeto ou string)
+      
       let mensagemTexto = '';
       
       if (typeof mensagem === 'string') {
@@ -197,7 +197,7 @@ const InvoiceProcessor = () => {
     let id = 'N/A';
     let isNew = true;
     
-    // CORREÇÃO: Verificar se fornecedorText é string antes de usar .includes()
+    
     if (typeof fornecedorText === 'string') {
       if (fornecedorText.includes('CRIADO - ID:')) {
         const idMatch = fornecedorText.match(/CRIADO - ID: (\d+)/);
@@ -234,7 +234,7 @@ const InvoiceProcessor = () => {
     let id = 'N/A';
     let isNew = true;
     
-    // CORREÇÃO: Verificar se faturadoText é string antes de usar .includes()
+    
     if (typeof faturadoText === 'string') {
       if (faturadoText.includes('CRIADO - ID:')) {
         const idMatch = faturadoText.match(/CRIADO - ID: (\d+)/);
@@ -314,7 +314,7 @@ const InvoiceProcessor = () => {
     let ids = [];
     let isNew = true;
     
-    // CORREÇÃO: Verificar se despesaText é string antes de usar .includes()
+    
     if (typeof despesaText === 'string') {
       if (despesaText.includes('CRIADAS - IDs:')) {
         const idsMatch = despesaText.match(/CRIADAS - IDs: (.+)/);

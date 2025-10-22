@@ -1,4 +1,4 @@
-﻿// database/migrate.js
+﻿
 const { Client } = require('pg');
 
 async function migrate() {

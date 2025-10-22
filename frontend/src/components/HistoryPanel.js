@@ -12,7 +12,7 @@ const HistoryPanel = ({ onSelectNote, isOpen, onClose }) => {
     setError('');
     try {
       const response = await getHistory();
-      // CORREÇÃO: Garantir que seja um array válido
+      
       if (response && response.success) {
         setHistory(Array.isArray(response.data) ? response.data : []);
       } else {
@@ -32,7 +32,7 @@ const HistoryPanel = ({ onSelectNote, isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // CORREÇÃO: Função handleViewNote atualizada com logs de debug
+
   const handleViewNote = async (id) => {
     try {
       console.log('🔍 Carregando nota do histórico, ID:', id);
