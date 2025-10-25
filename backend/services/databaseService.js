@@ -1,11 +1,18 @@
-
 const { Client } = require('pg');
 
 class DatabaseService {
   constructor() {
+    // Verificar se está rodando em Docker
+    const isDocker = process.env.RUNNING_IN_DOCKER === 'true';
+    console.log('Ambiente Docker:', isDocker ? 'Sim' : 'Não');
+    
+    // Forçar uso de IPv4 em vez de IPv6
+    const pgHost = isDocker ? 'postgres' : (process.env.DB_HOST || '127.0.0.1');
+    console.log('Conectando ao PostgreSQL em:', pgHost);
+    
     this.client = new Client({
       user: process.env.DB_USER || 'postgres',
-      host: process.env.DB_HOST || 'localhost',
+      host: pgHost,
       database: process.env.DB_NAME || 'contas_app',
       password: process.env.DB_PASSWORD || 'postgres',
       port: process.env.DB_PORT || 5432,
@@ -25,60 +32,159 @@ class DatabaseService {
     }
   }
 
-
+  // ========== FUNÇÕES PARA FORNECEDOR CORRIGIDAS ==========
 
   async verificarFornecedor(razaoSocial, cnpj) {
     try {
       const query = `
-        SELECT ID FROM PESSOAS 
-        WHERE TIPO = $1 
-        AND (UPPER(RAZAO_SOCIAL) = UPPER($2) OR CNPJ_CPF = $3) 
+        SELECT ID, TIPO, RAZAO_SOCIAL, CNPJ_CPF FROM PESSOAS 
+        WHERE (UPPER(RAZAO_SOCIAL) = UPPER($1) OR CNPJ_CPF = $2) 
         AND ATIVO = TRUE
         LIMIT 1
       `;
       
-      const result = await this.client.query(query, ['FORNECEDOR', razaoSocial, cnpj]);
+      const result = await this.client.query(query, [razaoSocial, cnpj]);
+      
+      if (result.rows.length > 0) {
+        const pessoa = result.rows[0];
+        return { 
+          existe: true, 
+          id: pessoa.id,
+          tipo: pessoa.tipo,
+          razaoSocial: pessoa.razao_social,
+          cnpjCpf: pessoa.cnpj_cpf
+        };
+      }
       
       return { 
-        existe: result.rows.length > 0, 
-        id: result.rows[0]?.id || null
+        existe: false, 
+        id: null,
+        tipo: null,
+        razaoSocial: null,
+        cnpjCpf: null
       };
     } catch (error) {
       console.error('Erro ao verificar fornecedor:', error);
-      return { existe: false, id: null };
+      return { 
+        existe: false, 
+        id: null,
+        tipo: null,
+        razaoSocial: null,
+        cnpjCpf: null
+      };
     }
   }
 
   async criarFornecedor(razaoSocial, cnpj) {
     try {
+      // Verificar se já existe alguém com este CNPJ (independente do tipo)
+      const verificaExistente = await this.verificarFornecedor(razaoSocial, cnpj);
+      
+      if (verificaExistente.existe) {
+        console.log(`⚠️  CNPJ/CPF ${cnpj} já existe na base como ${verificaExistente.tipo}. ID: ${verificaExistente.id}`);
+        
+        // Se já existe mas não é FORNECEDOR, atualizar o tipo
+        if (verificaExistente.tipo !== 'FORNECEDOR') {
+          console.log(`🔄 Atualizando tipo de ${verificaExistente.tipo} para FORNECEDOR`);
+          
+          await this.client.query(
+            'UPDATE PESSOAS SET TIPO = $1 WHERE ID = $2',
+            ['FORNECEDOR', verificaExistente.id]
+          );
+          
+          console.log(`✅ Tipo atualizado para FORNECEDOR para ID: ${verificaExistente.id}`);
+        }
+        
+        return verificaExistente.id;
+      }
+
+      // Se não existe, criar novo
       const result = await this.client.query(
         'INSERT INTO PESSOAS (TIPO, RAZAO_SOCIAL, CNPJ_CPF, ATIVO, DATA_CADASTRO) VALUES ($1, $2, $3, TRUE, NOW()) RETURNING ID',
         ['FORNECEDOR', razaoSocial, cnpj]
       );
       
-    
-      return Number(result.rows[0].id);
+      const novoId = Number(result.rows[0].id);
+      console.log(`✅ Novo fornecedor criado: ID ${novoId}, CNPJ: ${cnpj}`);
+      
+      return novoId;
     } catch (error) {
+      if (error.message.includes('duplicate key value violates unique constraint')) {
+        console.error(`❌ CNPJ/CPF ${cnpj} já existe na base de dados`);
+        
+        // Tentar recuperar o ID existente
+        try {
+          const recuperaExistente = await this.client.query(
+            'SELECT ID FROM PESSOAS WHERE CNPJ_CPF = $1 LIMIT 1',
+            [cnpj]
+          );
+          
+          if (recuperaExistente.rows.length > 0) {
+            const idExistente = Number(recuperaExistente.rows[0].id);
+            console.log(`🔍 Recuperado ID existente: ${idExistente} para CNPJ: ${cnpj}`);
+            return idExistente;
+          }
+        } catch (recuperaError) {
+          console.error('Erro ao recuperar ID existente:', recuperaError);
+        }
+        
+        throw new Error(`CNPJ/CPF ${cnpj} já está cadastrado no sistema`);
+      }
+      
       throw new Error('Erro ao criar fornecedor: ' + error.message);
     }
   }
 
   async criarMovimentoConta(movimentoData) {
     try {
-      const result = await this.client.query(
-        `INSERT INTO MOVIMENTOCONTAS 
-         (TIPO, ID_PESSOA, NUMERO_NOTA_FISCAL, DATA_EMISSAO, VALOR_TOTAL, OBSERVACAO, DATA_CADASTRO) 
-         VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING ID`,
-        [
-          movimentoData.tipo,
-          movimentoData.idPessoa,
-          movimentoData.numeroNotaFiscal,
-          movimentoData.dataEmissao,
-          movimentoData.valorTotal,
-          movimentoData.observacao
-        ]
+      // Detectar qual coluna de documento existe na tabela (NUMERO_NOTA_FISCAL vs NUMERO_DOCUMENTO)
+      const colsResult = await this.client.query(`
+        SELECT column_name FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'movimentocontas'
+      `);
+      const colNames = colsResult.rows.map(r => r.column_name.toLowerCase());
+      const hasNumeroNota = colNames.includes('numero_nota_fiscal');
+      const hasNumeroDocumento = colNames.includes('numero_documento');
+      const docCol = hasNumeroNota ? 'NUMERO_NOTA_FISCAL' : (hasNumeroDocumento ? 'NUMERO_DOCUMENTO' : null);
+
+      if (!docCol) {
+        // Não há coluna de documento; inserir sem esse campo
+        const result = await this.client.query(
+          `INSERT INTO MOVIMENTOCONTAS 
+           (TIPO, ID_PESSOA, DATA_EMISSAO, VALOR_TOTAL, OBSERVACAO, DATA_CADASTRO) 
+           VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING ID`,
+          [
+            movimentoData.tipo,
+            movimentoData.idPessoa,
+            movimentoData.dataEmissao,
+            movimentoData.valorTotal,
+            movimentoData.observacao || null
+          ]
+        );
+        return Number(result.rows[0].id);
+      }
+
+      // Preparar valor do documento/nota
+      const numeroDocumento = (
+        movimentoData.numeroNotaFiscal ??
+        movimentoData.numeroDocumento ??
+        movimentoData.numeroDocumentoFiscal ??
+        null
       );
-      
+
+      const insertQuery = `
+        INSERT INTO MOVIMENTOCONTAS 
+         (TIPO, ID_PESSOA, ${docCol}, DATA_EMISSAO, VALOR_TOTAL, OBSERVACAO, DATA_CADASTRO) 
+         VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING ID`;
+
+      const result = await this.client.query(insertQuery, [
+        movimentoData.tipo,
+        movimentoData.idPessoa,
+        numeroDocumento,
+        movimentoData.dataEmissao,
+        movimentoData.valorTotal,
+        movimentoData.observacao || null
+      ]);
       
       return Number(result.rows[0].id);
     } catch (error) {
@@ -88,6 +194,8 @@ class DatabaseService {
 
   async criarParcelas(idMovimento, parcelas) {
     try {
+      console.log('📦 Criando parcelas para movimento:', idMovimento);
+      console.log('📦 Dados das parcelas recebidas:', JSON.stringify(parcelas, null, 2));
       
       if (!parcelas || parcelas.length === 0) {
         const parcelaUnica = {
@@ -99,13 +207,32 @@ class DatabaseService {
       }
 
       const parcelasIds = [];
+      let parcelaIndex = 1;
       
       for (const parcela of parcelas) {
-        const identificacao = `${idMovimento}_${parcela.numeroParcela}`;
+        // 🔥 CORREÇÃO CRÍTICA: Garantir que todos os campos obrigatórios tenham valores válidos
+        const numeroParcela = parcela.numeroParcela || parcelaIndex;
+        const dataVencimento = parcela.dataVencimento || new Date().toISOString().split('T')[0];
+        const valorParcela = parcela.valor || parcela.valorParcela || 0;
         
+        const identificacao = `${idMovimento}_${numeroParcela}`;
+        const dataVencimentoFormatada = this.formatarDataParaPostgres(dataVencimento);
         
-        const dataVencimentoFormatada = this.formatarDataParaPostgres(parcela.dataVencimento);
-        
+        // 🔥 VALIDAÇÃO EXTRA: Garantir que numeroParcela não seja null/undefined
+        if (numeroParcela === null || numeroParcela === undefined) {
+          console.error('❌ ERRO: numeroParcela é null/undefined:', parcela);
+          throw new Error('numeroParcela não pode ser null ou undefined');
+        }
+
+        console.log(`📝 Inserindo parcela:`, {
+          idMovimento,
+          identificacao,
+          numeroParcela,
+          dataVencimento: dataVencimentoFormatada,
+          valorParcela,
+          situacao: 'ABERTA'
+        });
+
         const result = await this.client.query(
           `INSERT INTO PARCELACONTAS 
            (ID_MOVIMENTO, IDENTIFICACAO, NUMERO_PARCELA, DATA_VENCIMENTO, VALOR_PARCELA, SITUACAO, DATA_CADASTRO) 
@@ -113,57 +240,132 @@ class DatabaseService {
           [
             idMovimento,
             identificacao,
-            parcela.numeroParcela,
+            numeroParcela,
             dataVencimentoFormatada,
-            parcela.valor,
+            valorParcela,
             'ABERTA'
           ]
         );
         
-        parcelasIds.push(Number(result.rows[0].id));
-        console.log(`✅ Parcela ${parcela.numeroParcela} criada: ${dataVencimentoFormatada}`);
+        const parcelaId = Number(result.rows[0].id);
+        parcelasIds.push(parcelaId);
+        console.log(`✅ Parcela ${numeroParcela} criada (ID: ${parcelaId}): ${dataVencimentoFormatada}`);
+        
+        parcelaIndex++;
       }
       
       return parcelasIds;
     } catch (error) {
+      console.error('❌ ERRO DETALHADO ao criar parcelas:', {
+        idMovimento,
+        parcelasRecebidas: parcelas,
+        erro: error.message
+      });
       throw new Error('Erro ao criar parcelas: ' + error.message);
     }
   }
 
-  // ========== FUNÇÕES PARA FATURADO ==========
+  // ========== FUNÇÕES PARA FATURADO CORRIGIDAS ==========
 
   async verificarFaturado(nomeCompleto, cpf) {
     try {
       const query = `
-        SELECT ID FROM PESSOAS 
-        WHERE TIPO = $1 
-        AND (UPPER(RAZAO_SOCIAL) = UPPER($2) OR CNPJ_CPF = $3) 
+        SELECT ID, TIPO, RAZAO_SOCIAL, CNPJ_CPF FROM PESSOAS 
+        WHERE (UPPER(RAZAO_SOCIAL) = UPPER($1) OR CNPJ_CPF = $2) 
         AND ATIVO = TRUE
         LIMIT 1
       `;
       
-      const result = await this.client.query(query, ['FATURADO', nomeCompleto, cpf]);
+      const result = await this.client.query(query, [nomeCompleto, cpf]);
+      
+      if (result.rows.length > 0) {
+        const pessoa = result.rows[0];
+        return { 
+          existe: true, 
+          id: pessoa.id,
+          tipo: pessoa.tipo,
+          razaoSocial: pessoa.razao_social,
+          cnpjCpf: pessoa.cnpj_cpf
+        };
+      }
       
       return { 
-        existe: result.rows.length > 0, 
-        id: result.rows[0]?.id || null
+        existe: false, 
+        id: null,
+        tipo: null,
+        razaoSocial: null,
+        cnpjCpf: null
       };
     } catch (error) {
       console.error('Erro ao verificar faturado:', error);
-      return { existe: false, id: null };
+      return { 
+        existe: false, 
+        id: null,
+        tipo: null,
+        razaoSocial: null,
+        cnpjCpf: null
+      };
     }
   }
 
   async criarFaturado(nomeCompleto, cpf) {
     try {
+      // 🔥 CORREÇÃO: Verificar se já existe alguém com este CPF (independente do tipo)
+      const verificaExistente = await this.verificarFaturado(nomeCompleto, cpf);
+      
+      if (verificaExistente.existe) {
+        console.log(`⚠️  CPF/CNPJ ${cpf} já existe na base como ${verificaExistente.tipo}. ID: ${verificaExistente.id}`);
+        
+        // Se já existe mas não é FATURADO, podemos atualizar o tipo ou retornar o ID existente
+        if (verificaExistente.tipo !== 'FATURADO') {
+          console.log(`🔄 Atualizando tipo de ${verificaExistente.tipo} para FATURADO`);
+          
+          // Opção 1: Atualizar o tipo para FATURADO
+          await this.client.query(
+            'UPDATE PESSOAS SET TIPO = $1 WHERE ID = $2',
+            ['FATURADO', verificaExistente.id]
+          );
+          
+          console.log(`✅ Tipo atualizado para FATURADO para ID: ${verificaExistente.id}`);
+        }
+        
+        return verificaExistente.id;
+      }
+
+      // Se não existe, criar novo
       const result = await this.client.query(
         'INSERT INTO PESSOAS (TIPO, RAZAO_SOCIAL, CNPJ_CPF, ATIVO, DATA_CADASTRO) VALUES ($1, $2, $3, TRUE, NOW()) RETURNING ID',
         ['FATURADO', nomeCompleto, cpf]
       );
       
+      const novoId = Number(result.rows[0].id);
+      console.log(`✅ Novo faturado criado: ID ${novoId}, CPF: ${cpf}`);
       
-      return Number(result.rows[0].id);
+      return novoId;
     } catch (error) {
+      // 🔥 CORREÇÃO: Tratar erro de duplicidade de forma mais específica
+      if (error.message.includes('duplicate key value violates unique constraint')) {
+        console.error(`❌ CPF/CNPJ ${cpf} já existe na base de dados`);
+        
+        // Tentar recuperar o ID existente
+        try {
+          const recuperaExistente = await this.client.query(
+            'SELECT ID FROM PESSOAS WHERE CNPJ_CPF = $1 LIMIT 1',
+            [cpf]
+          );
+          
+          if (recuperaExistente.rows.length > 0) {
+            const idExistente = Number(recuperaExistente.rows[0].id);
+            console.log(`🔍 Recuperado ID existente: ${idExistente} para CPF: ${cpf}`);
+            return idExistente;
+          }
+        } catch (recuperaError) {
+          console.error('Erro ao recuperar ID existente:', recuperaError);
+        }
+        
+        throw new Error(`CPF/CNPJ ${cpf} já está cadastrado no sistema`);
+      }
+      
       throw new Error('Erro ao criar faturado: ' + error.message);
     }
   }
@@ -194,21 +396,54 @@ class DatabaseService {
 
   async criarClassificacao(tipo, descricao) {
     try {
-      const result = await this.client.query(
-        'INSERT INTO CLASSIFICACAO (TIPO, DESCRICAO, ATIVO, DATA_CADASTRO) VALUES ($1, $2, TRUE, NOW()) RETURNING ID',
-        [tipo, descricao]
-      );
-      
-      
+      // Garantir descrição válida para evitar NULL em colunas obrigatórias
+      const safeDescricao = (descricao && descricao.trim()) ? descricao.trim() : 'NAO_CLASSIFICADA';
+
+      // Verificar se a coluna NOME existe na tabela CLASSIFICACAO
+      const checkNomeColumn = `
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'public' 
+          AND table_name = 'classificacao' 
+          AND column_name = 'nome'
+        LIMIT 1
+      `;
+      const nomeColumnResult = await this.client.query(checkNomeColumn);
+      const hasNomeColumn = nomeColumnResult.rows.length > 0;
+
+      let insertQuery;
+      let params;
+      if (hasNomeColumn) {
+        // Inserir preenchendo NOME (não nulo) e DESCRICAO com o mesmo valor
+        insertQuery = 'INSERT INTO CLASSIFICACAO (NOME, TIPO, DESCRICAO, ATIVO, DATA_CADASTRO) VALUES ($1, $2, $3, TRUE, NOW()) RETURNING ID';
+        params = [safeDescricao, tipo, safeDescricao];
+      } else {
+        // Esquema antigo sem coluna NOME
+        insertQuery = 'INSERT INTO CLASSIFICACAO (TIPO, DESCRICAO, ATIVO, DATA_CADASTRO) VALUES ($1, $2, TRUE, NOW()) RETURNING ID';
+        params = [tipo, safeDescricao];
+      }
+
+      const result = await this.client.query(insertQuery, params);
       return Number(result.rows[0].id);
     } catch (error) {
       throw new Error('Erro ao criar classificação: ' + error.message);
     }
   }
 
-  async vincularClassificacao(idMovimento, idClassificacao) {
+  async vincularClassificacao(idMovimento, idClassificacao, valor = 0) {
     try {
+      // Primeiro, verificar a estrutura da tabela
+      const tableInfo = await this.client.query(`
+        SELECT column_name, is_nullable, data_type
+        FROM information_schema.columns
+        WHERE table_schema = 'public' 
+        AND table_name = 'movimento_classificacao'
+        ORDER BY ordinal_position
+      `);
       
+      const columns = tableInfo.rows.map(row => row.column_name);
+      const hasValorColumn = columns.includes('valor');
+      
+      // Verificar se já existe o vínculo
       const checkQuery = `
         SELECT 1 FROM MOVIMENTO_CLASSIFICACAO 
         WHERE ID_MOVIMENTO = $1 AND ID_CLASSIFICACAO = $2
@@ -218,11 +453,19 @@ class DatabaseService {
       const checkResult = await this.client.query(checkQuery, [idMovimento, idClassificacao]);
       
       if (checkResult.rows.length === 0) {
-        await this.client.query(
-          'INSERT INTO MOVIMENTO_CLASSIFICACAO (ID_MOVIMENTO, ID_CLASSIFICACAO) VALUES ($1, $2)',
-          [idMovimento, idClassificacao]
-        );
-        console.log(`✅ Classificação ${idClassificacao} vinculada ao movimento ${idMovimento}`);
+        if (hasValorColumn) {
+          await this.client.query(
+            'INSERT INTO MOVIMENTO_CLASSIFICACAO (ID_MOVIMENTO, ID_CLASSIFICACAO, VALOR) VALUES ($1, $2, $3)',
+            [idMovimento, idClassificacao, valor]
+          );
+          console.log(`✅ Classificação ${idClassificacao} vinculada ao movimento ${idMovimento} com valor ${valor}`);
+        } else {
+          await this.client.query(
+            'INSERT INTO MOVIMENTO_CLASSIFICACAO (ID_MOVIMENTO, ID_CLASSIFICACAO) VALUES ($1, $2)',
+            [idMovimento, idClassificacao]
+          );
+          console.log(`✅ Classificação ${idClassificacao} vinculada ao movimento ${idMovimento}`);
+        }
       } else {
         console.log(`ℹ️ Classificação ${idClassificacao} já estava vinculada ao movimento ${idMovimento}`);
       }
@@ -298,6 +541,22 @@ class DatabaseService {
           
           if (existe) {
             console.log(`✅ Tabela ${tabela.nome} - ${tabela.descricao}`);
+            
+            // Verificar estrutura detalhada da PARCELACONTAS
+            if (tabela.nome === 'PARCELACONTAS') {
+              const columnsResult = await this.client.query(`
+                SELECT column_name, data_type, is_nullable
+                FROM information_schema.columns
+                WHERE table_schema = 'public' 
+                AND table_name = 'parcelacontas'
+                ORDER BY ordinal_position
+              `);
+              
+              console.log(`   Colunas de PARCELACONTAS:`);
+              columnsResult.rows.forEach(col => {
+                console.log(`   - ${col.column_name} (${col.data_type}, ${col.is_nullable === 'YES' ? 'NULL' : 'NOT NULL'})`);
+              });
+            }
           } else {
             console.warn(`❌ Tabela ${tabela.nome} NÃO ENCONTRADA - ${tabela.descricao}`);
           }

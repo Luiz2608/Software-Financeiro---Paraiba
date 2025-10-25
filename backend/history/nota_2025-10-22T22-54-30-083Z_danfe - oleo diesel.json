@@ -1,0 +1,129 @@
+{
+  "id": "2025-10-22T22-54-30-083Z",
+  "fileName": "danfe - oleo diesel.pdf",
+  "processedAt": "2025-10-22T22:54:30.082Z",
+  "data": {
+    "success": true,
+    "dadosExtraidos": {
+      "fornecedor": {
+        "razaoSocial": "VALE DA SERRA COMERCIAL DE PRODUTOS DERIVADOS DE PETROLEO LT",
+        "fantasia": "VALE DA SERRA COMERCIAL DE PRODUTOS DERIVADOS DE PETROLEO",
+        "cnpj": "01.543.070/0001-59",
+        "tipo": "PJ",
+        "endereco": "AV PAUZANES DE CARVALHO, 988, SETOR ELDORADO, Rio Verde/GO"
+      },
+      "cliente": {
+        "nome": "FULANO DA SILVA",
+        "cpf": "999.999.999-99",
+        "cnpj": "",
+        "tipo": "PF",
+        "endereco": "FAZENDA ALEGRIA, S/N, ZONA RURAL, Montividiu/GO"
+      },
+      "numeroNotaFiscal": "009.999.999",
+      "dataEmissao": "19/09/2025",
+      "valorFrete": 0,
+      "produtos": [
+        {
+          "descricao": "OLEO DIESEL B S10 ADITIVADO",
+          "quantidade": 15000,
+          "valorUnitario": 5.5,
+          "valorTotal": 82500
+        }
+      ],
+      "quantidadeParcelas": 1,
+      "parcelas": [
+        {
+          "dataVencimento": "03/10/2025",
+          "valor": 82500
+        }
+      ],
+      "valorTotal": 82500,
+      "classificacaoDespesa": [
+        "MANUTENCAO_OPERACAO"
+      ],
+      "naturezaOperacao": "VENDA DE COMBUSTIVEIS",
+      "tipoConta": "APAGAR"
+    },
+    "processamento": {
+      "mensagens": [
+        {
+          "id": 1,
+          "texto": "🚀 Iniciando processamento de conta a pagar...",
+          "timestamp": "2025-10-22T22:54:30.000Z"
+        },
+        {
+          "id": 2,
+          "texto": "🔍 Verificando FORNECEDOR no banco de dados...",
+          "timestamp": "2025-10-22T22:54:30.000Z"
+        },
+        {
+          "id": 3,
+          "texto": "FORNECEDOR:\nVALE DA SERRA COMERCIAL DE PRODUTOS DERIVADOS DE PETROLEO LT\nCNPJ: 01.543.070/0001-59\nEXISTE - ID: 5",
+          "timestamp": "2025-10-22T22:54:30.025Z"
+        },
+        {
+          "id": 4,
+          "texto": "🔍 Verificando FATURADO no banco de dados...",
+          "timestamp": "2025-10-22T22:54:30.025Z"
+        },
+        {
+          "id": 5,
+          "texto": "FATURADO:\nFULANO DA SILVA\nCPF: N/A\nEXISTE - ID: 6",
+          "timestamp": "2025-10-22T22:54:30.027Z"
+        },
+        {
+          "id": 6,
+          "texto": "🔍 Verificando DESPESA: MANUTENCAO_OPERACAO",
+          "timestamp": "2025-10-22T22:54:30.028Z"
+        },
+        {
+          "id": 7,
+          "texto": "DESPESA:\nMANUTENCAO_OPERACAO\nEXISTE - ID: 6",
+          "timestamp": "2025-10-22T22:54:30.033Z"
+        },
+        {
+          "id": 8,
+          "texto": "💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...",
+          "timestamp": "2025-10-22T22:54:30.033Z"
+        },
+        {
+          "id": 9,
+          "texto": "✅ MOVIMENTO CRIADO - ID: 66",
+          "timestamp": "2025-10-22T22:54:30.059Z"
+        },
+        {
+          "id": 10,
+          "texto": "✅ CLASSIFICAÇÕES VINCULADAS - 1 categorias",
+          "timestamp": "2025-10-22T22:54:30.071Z"
+        },
+        {
+          "id": 11,
+          "texto": "📅 Criando parcelas...",
+          "timestamp": "2025-10-22T22:54:30.072Z"
+        },
+        {
+          "id": 12,
+          "texto": "✅ PARCELAS CRIADAS - 1 parcelas",
+          "timestamp": "2025-10-22T22:54:30.082Z"
+        },
+        {
+          "id": 13,
+          "texto": "🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 66",
+          "timestamp": "2025-10-22T22:54:30.082Z"
+        }
+      ],
+      "etapas": {
+        "fornecedor": "CRIADO - ID: 5",
+        "faturado": "CRIADO - ID: 6",
+        "despesa": "CRIADAS - IDs: 6",
+        "movimento": "CRIADO - ID: 66"
+      },
+      "resumo": "REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: 66"
+    },
+    "metadata": {
+      "fileName": "danfe - oleo diesel.pdf",
+      "processedAt": "2025-10-22T22:54:30.082Z",
+      "processadoPor": "Sistema Inteligente de Contas a Pagar"
+    }
+  }
+}

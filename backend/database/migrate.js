@@ -1,13 +1,13 @@
-﻿
-const { Client } = require('pg');
+﻿const { Client } = require('pg');
+require('dotenv').config();
 
 async function migrate() {
   const client = new Client({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'contas_app',
-    password: 'postgres',
-    port: 5432,
+    user: process.env.DB_USER || 'postgres',
+    host: process.env.DB_HOST || 'postgres',  // ← CORRIGIDO: usa variáveis de ambiente
+    database: process.env.DB_NAME || 'contas_app',
+    password: process.env.DB_PASSWORD || 'postgres',
+    port: process.env.DB_PORT || 5432,
   });
 
   try {
@@ -33,7 +33,8 @@ async function migrate() {
         ID SERIAL PRIMARY KEY,
         TIPO VARCHAR(20),
         DESCRICAO VARCHAR(100),
-        ATIVO BOOLEAN DEFAULT TRUE
+        ATIVO BOOLEAN DEFAULT TRUE,
+        DATA_CADASTRO TIMESTAMP DEFAULT CURRENT_TIMESTAMP  // ← ADICIONADO
       );
     `);
     console.log('✅ Tabela CLASSIFICACAO criada');
@@ -107,4 +108,9 @@ async function migrate() {
   }
 }
 
-migrate();
+// Só executa se chamado diretamente
+if (require.main === module) {
+  migrate();
+}
+
+module.exports = { migrate };

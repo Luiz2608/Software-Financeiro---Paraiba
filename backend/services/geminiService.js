@@ -1,6 +1,11 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_API_KEY || GEMINI_API_KEY.trim().length === 0) {
+  throw new Error('GEMINI_API_KEY ausente. Defina no .env e no docker-compose.');
+}
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 
 function normalizeNumber(value) {
@@ -190,7 +195,7 @@ const analyzeWithGemini = async (pdfText) => {
     console.log('Iniciando análise com Gemini...');
     
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
+      model: DEFAULT_MODEL,
       generationConfig: {
         temperature: 0.1,
         topP: 0.95,

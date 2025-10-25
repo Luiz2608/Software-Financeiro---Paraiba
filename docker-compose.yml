@@ -1,0 +1,82 @@
+services:
+  postgres:
+    image: postgres:13-alpine
+    container_name: contas_app_db
+    environment:
+      POSTGRES_DB: contas_app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d contas_app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pdf_processor_backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/contas_app
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: contas_app
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      PORT: "3000"
+      GEMINI_API_KEY: "AIzaSyBRYLy_VJDVQFdx9AFXz-gDstu_ie-qOKQ"
+      GEMINI_MODEL: "gemini-2.5-flash"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - app-network
+    restart: unless-stopped
+    # HEALTH CHECK DESATIVADO TEMPORARIAMENTE
+    # healthcheck:
+    #   test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 60s
+    command: >
+      sh -c "
+        echo '🕒 Aguardando PostgreSQL ficar disponível...' &&
+        sleep 20 &&
+        echo '🚀 Iniciando backend...' &&
+        npm start
+      "
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pdf_processor_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

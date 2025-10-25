@@ -6,7 +6,7 @@ async function testConnection() {
   
   const client = new Client({
     user: 'postgres',
-    host: 'localhost',
+    host: 'postgres',
     database: 'contas_app',
     password: '1234',
     port: 5432,
