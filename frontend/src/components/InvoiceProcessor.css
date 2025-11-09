@@ -95,9 +95,6 @@
   box-shadow: none;
 }
 
-/* ===== ESTILOS DO AGENTE INTELIGENTE ===== */
-
-/* Painel de Mensagens do Agente */
 .agent-messages-panel {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;
@@ -128,7 +125,6 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Mensagens individuais do agente */
 .agent-message {
   background: rgba(255, 255, 255, 0.95);
   margin-bottom: 0.75rem;
@@ -171,7 +167,6 @@
   font-weight: 500;
 }
 
-/* Indicador de processamento */
 .agent-processing-indicator {
   display: flex;
   align-items: center;
@@ -199,7 +194,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Indicador do Agente nos resultados */
 .agent-indicator {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -222,7 +216,6 @@
   border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
-/* Scrollbar personalizada para o painel do agente */
 .agent-messages-container::-webkit-scrollbar {
   width: 8px;
 }
@@ -371,7 +364,6 @@
   line-height: 1.8;
 }
 
-/* ESTILOS ATUALIZADOS PARA ENDEREÇO */
 .supplier-info p,
 .client-info p {
   margin: 10px 0;
@@ -390,7 +382,6 @@
   font-weight: 600;
 }
 
-/* Estilo específico para o endereço (permite quebra de linha) */
 .supplier-info p:last-child,
 .client-info p:last-child {
   border-bottom: none;
@@ -494,7 +485,6 @@ tr:hover {
   border: 1px solid #4a5568;
 }
 
-/* Indicador visual para notas do histórico */
 .result-from-history {
   border-left: 6px solid #ffc107 !important;
   background: #fffbf0 !important;
@@ -516,7 +506,6 @@ tr:hover {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .invoice-processor {
     padding: 15px;
@@ -555,7 +544,6 @@ tr:hover {
     font-size: 14px;
   }
   
-  /* Ajustes para mobile - endereço */
   .supplier-info p,
   .client-info p {
     display: flex;
@@ -573,7 +561,6 @@ tr:hover {
     width: 100%;
   }
   
-  /* Ajustes para o agente em mobile */
   .agent-messages-panel {
     padding: 1rem;
     margin: 1rem 0;
@@ -631,7 +618,6 @@ tr:hover {
     margin: 10px 0;
   }
   
-  /* Ajustes extras para mobile muito pequeno */
   .supplier-section,
   .client-section,
   .products-section,
@@ -647,7 +633,6 @@ tr:hover {
     font-size: 14px;
   }
   
-  /* Ajustes finos para o agente */
   .agent-messages-panel h3 {
     font-size: 1.1rem;
   }
@@ -662,7 +647,6 @@ tr:hover {
   }
 }
 
-/* Scrollbar personalizada para tabelas */
 .products-table::-webkit-scrollbar,
 .parcelas-table::-webkit-scrollbar {
   height: 8px;
@@ -685,7 +669,6 @@ tr:hover {
   background: #a8a8a8;
 }
 
-/* Estados de loading */
 .loading-overlay {
   position: absolute;
   top: 0;
@@ -713,7 +696,6 @@ tr:hover {
   100% { transform: rotate(360deg); }
 }
 
-/* Melhorias de acessibilidade */
 .file-input:focus + .file-label {
   outline: 2px solid #007bff;
   outline-offset: 2px;
@@ -729,7 +711,6 @@ tr:hover {
   outline-offset: 2px;
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .summary-item {
     border: 1px solid #000;
@@ -749,7 +730,6 @@ tr:hover {
   }
 }
 
-/* Animações de entrada para o painel do agente */
 .agent-messages-panel {
   animation: slideInUp 0.5s ease-out;
 }
@@ -765,7 +745,6 @@ tr:hover {
   }
 }
 
-/* Efeito de brilho para mensagens importantes */
 .agent-message.success {
   position: relative;
   overflow: hidden;
@@ -802,7 +781,6 @@ tr:hover {
   font-weight: bold;
 }
 
-/* Estilos para tipos de conta */
 .conta-pagar {
   color: #e74c3c;
   font-weight: bold;
@@ -821,7 +799,6 @@ tr:hover {
   border: 1px solid #d5f5e3;
 }
 
-/* Ajuste no grid para mais colunas */
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -829,7 +806,6 @@ tr:hover {
   margin-bottom: 20px;
 }
 
-/* Estilos para valores de informação */
 .info-value.warning {
   color: #e67e22;
   font-weight: bold;
@@ -840,7 +816,6 @@ tr:hover {
   font-weight: bold;
 }
 
-/* Estilos para tipos de conta */
 .conta-pagar {
   color: #e74c3c;
   font-weight: bold;
@@ -859,7 +834,6 @@ tr:hover {
   border: 1px solid #d5f5e3;
 }
 
-/* Ajuste no grid para mais colunas */
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -867,7 +841,6 @@ tr:hover {
   margin-bottom: 20px;
 }
 
-/* Estilos para valores de informação */
 .info-value.warning {
   color: #e67e22;
   font-weight: bold;
@@ -878,7 +851,6 @@ tr:hover {
   font-weight: bold;
 }
 
-/* Estilos para o histórico */
 .history-item {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -941,4 +913,40 @@ tr:hover {
 
 .delete-button:hover {
   background-color: #f8f9fa;
+}
+
+/* ESTILOS PARA AS ABAS */
+.tabs-menu {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e1e5e9;
+  padding-bottom: 10px;
+  gap: 10px;
+}
+
+.tabs-menu button {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: #666;
+  border: 2px solid transparent;
+}
+
+.tabs-menu button:hover {
+  background: #f8f9fa;
+  color: #333;
+  border-color: #e1e5e9;
+}
+
+.tabs-menu .tab-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  border-color: #667eea;
 }

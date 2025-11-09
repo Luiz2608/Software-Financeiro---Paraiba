@@ -1,0 +1,39 @@
+.agente3-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.agente3-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.agente3-input textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.agente3-input button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.agente3-input button:disabled {
+    background: #ccc;
+}
+
+.agente3-resposta {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #007bff;
+}

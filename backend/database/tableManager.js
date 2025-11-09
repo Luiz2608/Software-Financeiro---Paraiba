@@ -14,7 +14,6 @@ async function checkAndCreateTables() {
     await client.connect();
     console.log('✅ Conectado ao PostgreSQL');
     
-    // Verificar tabelas existentes
     const tables = await client.query(`
       SELECT table_name 
       FROM information_schema.tables 
@@ -23,7 +22,6 @@ async function checkAndCreateTables() {
     
     const existingTables = tables.rows.map(row => row.table_name.toLowerCase());
     
-    // Definir tabelas necessárias e suas descrições
     const requiredTables = [
       { name: 'PESSOAS', description: 'Tabela de pessoas (fornecedores/faturados)' },
       { name: 'MOVIMENTOCONTAS', description: 'Tabela de movimentos contábeis' },
@@ -32,22 +30,18 @@ async function checkAndCreateTables() {
       { name: 'MOVIMENTO_CLASSIFICACAO', description: 'Tabela de vínculo' }
     ];
     
-    // Verificar e criar tabelas ausentes
     for (const table of requiredTables) {
       if (!existingTables.includes(table.name.toLowerCase())) {
         console.log(`❌ Tabela ${table.name} NÃO ENCONTRADA - ${table.description}`);
         await createTable(client, table.name);
       } else {
         console.log(`✅ Tabela ${table.name} encontrada`);
-        // Verificar estrutura das tabelas existentes
         await verifyTableStructure(client, table.name);
       }
     }
 
-    // Verificar e corrigir colunas necessárias
     await checkAndFixColumns(client);
     
-    // Verificar novamente após criação
     const updatedTables = await client.query(`
       SELECT table_name 
       FROM information_schema.tables 
@@ -180,18 +174,14 @@ async function verifyTableStructure(client, tableName) {
 async function checkAndFixColumns(client) {
   console.log('\n🔧 Verificando e corrigindo colunas...');
   
-  // Correções para PARCELACONTAS
   await addColumnIfNotExists(client, 'PARCELACONTAS', 'IDENTIFICACAO', 'VARCHAR(100)');
   await addColumnIfNotExists(client, 'PARCELACONTAS', 'DATA_CADASTRO', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
   
-  // Verificar e renomear colunas se necessário em PARCELACONTAS
   await renameColumnIfExists(client, 'PARCELACONTAS', 'VALOR', 'VALOR_PARCELA');
   await renameColumnIfExists(client, 'PARCELACONTAS', 'STATUS', 'SITUACAO');
   
-  // Correções para MOVIMENTOCONTAS
   await addColumnIfNotExists(client, 'MOVIMENTOCONTAS', 'NUMERO_NOTA_FISCAL', 'VARCHAR(50)');
   
-  // Correções para MOVIMENTO_CLASSIFICACAO
   await addColumnIfNotExists(client, 'MOVIMENTO_CLASSIFICACAO', 'DATA_CADASTRO', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
 }
 

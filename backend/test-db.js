@@ -1,4 +1,3 @@
-// test-db.js
 const { Client } = require('pg');
 
 async function testConnection() {
@@ -16,7 +15,6 @@ async function testConnection() {
     await client.connect();
     console.log('✅ Conectado ao PostgreSQL com sucesso!');
     
-    // Testar consulta simples
     const result = await client.query('SELECT version()');
     console.log('📊 Versão do PostgreSQL:', result.rows[0].version);
     

@@ -14,7 +14,6 @@ async function migrate() {
     await client.connect();
     console.log('✅ Conectado ao PostgreSQL');
     
-    // Criar tabela PESSOAS
     await client.query(`
       CREATE TABLE IF NOT EXISTS PESSOAS (
         ID SERIAL PRIMARY KEY,
@@ -27,7 +26,6 @@ async function migrate() {
     `);
     console.log('✅ Tabela PESSOAS criada');
 
-    // Criar tabela CLASSIFICACAO
     await client.query(`
       CREATE TABLE IF NOT EXISTS CLASSIFICACAO (
         ID SERIAL PRIMARY KEY,
@@ -39,7 +37,6 @@ async function migrate() {
     `);
     console.log('✅ Tabela CLASSIFICACAO criada');
 
-    // Criar tabela MOVIMENTOCONTAS
     await client.query(`
       CREATE TABLE IF NOT EXISTS MOVIMENTOCONTAS (
         ID SERIAL PRIMARY KEY,
@@ -55,7 +52,6 @@ async function migrate() {
     `);
     console.log('✅ Tabela MOVIMENTOCONTAS criada');
 
-    // Criar tabela PARCELACONTAS
     await client.query(`
       CREATE TABLE IF NOT EXISTS PARCELACONTAS (
         ID SERIAL PRIMARY KEY,
@@ -70,7 +66,6 @@ async function migrate() {
     `);
     console.log('✅ Tabela PARCELACONTAS criada');
 
-    // Criar tabela MOVIMENTO_CLASSIFICACAO
     await client.query(`
       CREATE TABLE IF NOT EXISTS MOVIMENTO_CLASSIFICACAO (
         ID_MOVIMENTO INTEGER,
@@ -79,7 +74,6 @@ async function migrate() {
     `);
     console.log('✅ Tabela MOVIMENTO_CLASSIFICACAO criada');
 
-    // Inserir classificações básicas
     console.log('📝 Inserindo classificações...');
     
     const classificacoes = [
@@ -108,7 +102,6 @@ async function migrate() {
   }
 }
 
-// Só executa se chamado diretamente
 if (require.main === module) {
   migrate();
 }

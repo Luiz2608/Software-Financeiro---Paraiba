@@ -1,4 +1,3 @@
-// Funções auxiliares para validação de documentos
 const validateDocument = (documento) => {
   if (!documento || documento === 'N/A' || documento === '') return { tipo: 'N/A', documento: '' };
   

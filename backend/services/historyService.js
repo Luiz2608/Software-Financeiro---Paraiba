@@ -3,7 +3,6 @@ const path = require('path');
 
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 
-// Garantir que o diretório de histórico existe
 if (!fs.existsSync(HISTORY_DIR)) {
   fs.mkdirSync(HISTORY_DIR, { recursive: true });
 }
@@ -12,7 +11,6 @@ const saveToHistory = (invoiceData) => {
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     
-    // CORREÇÃO: Acessar fileName corretamente
     let safeFileName = 'arquivo_desconhecido';
     if (invoiceData.fileName && typeof invoiceData.fileName === 'string') {
       safeFileName = invoiceData.fileName.replace(/\.pdf$/i, '');
@@ -23,7 +21,6 @@ const saveToHistory = (invoiceData) => {
     const historyFileName = `nota_${timestamp}_${safeFileName}.json`;
     const filePath = path.join(HISTORY_DIR, historyFileName);
     
-    // CORREÇÃO: Estrutura completa que o frontend espera
     const historyEntry = {
       id: timestamp,
       fileName: invoiceData.fileName || invoiceData.nomeArquivo || 'arquivo_desconhecido.pdf',
@@ -68,7 +65,7 @@ const getHistory = () => {
     const files = fs.readdirSync(HISTORY_DIR)
       .filter(file => file.endsWith('.json'))
       .sort()
-      .reverse(); // Mais recentes primeiro
+      .reverse(); 
     
     const history = files.map(file => {
       try {
@@ -76,7 +73,6 @@ const getHistory = () => {
         const content = fs.readFileSync(filePath, 'utf8');
         const entry = JSON.parse(content);
         
-        // CORREÇÃO: Acessar dados da estrutura correta
         const dadosExtraidos = entry.data?.dadosExtraidos || {};
         const fornecedor = dadosExtraidos.fornecedor || {};
         const faturado = dadosExtraidos.faturado || {};
@@ -85,7 +81,7 @@ const getHistory = () => {
           id: entry.id,
           fileName: entry.fileName,
           processedAt: entry.processedAt,
-          // CORREÇÃO: Preview com dados reais
+
           preview: {
             numeroNota: dadosExtraidos.numeroNotaFiscal || 'N/A',
             fornecedor: fornecedor.razaoSocial || fornecedor.nome || 'N/A',
@@ -93,7 +89,7 @@ const getHistory = () => {
             dataEmissao: dadosExtraidos.dataEmissao || 'N/A',
             tipoConta: dadosExtraidos.tipoConta || 'APAGAR'
           },
-          // Manter dados completos para quando selecionar
+          
           data: entry.data
         };
       } catch (error) {
@@ -109,7 +105,6 @@ const getHistory = () => {
   }
 };
 
-// CORREÇÃO: Função getHistoryEntry atualizada com logs e estrutura melhorada
 const getHistoryEntry = (id) => {
   try {
     if (!fs.existsSync(HISTORY_DIR)) {
@@ -136,7 +131,6 @@ const getHistoryEntry = (id) => {
       fileName: entry.fileName
     });
     
-    // CORREÇÃO: Retornar estrutura que o frontend espera
     return {
       success: true,
       data: entry.data || {

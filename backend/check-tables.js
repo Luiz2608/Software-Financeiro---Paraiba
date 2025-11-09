@@ -1,4 +1,3 @@
-// check-tables.js
 require('dotenv').config();
 const { Client } = require('pg');
 
@@ -15,7 +14,6 @@ async function checkAndCreateTables() {
     await client.connect();
     console.log('✅ Conectado ao PostgreSQL');
     
-    // Verificar tabelas existentes
     const tables = await client.query(`
       SELECT table_name 
       FROM information_schema.tables 
@@ -24,7 +22,6 @@ async function checkAndCreateTables() {
     
     const existingTables = tables.rows.map(row => row.table_name.toLowerCase());
     
-    // Definir tabelas necessárias e suas descrições
     const requiredTables = [
       { name: 'PESSOAS', description: 'Tabela de pessoas (fornecedores/faturados)' },
       { name: 'MOVIMENTOCONTAS', description: 'Tabela de movimentos contábeis' },
@@ -33,7 +30,6 @@ async function checkAndCreateTables() {
       { name: 'MOVIMENTO_CLASSIFICACAO', description: 'Tabela de vínculo' }
     ];
     
-    // Verificar e criar tabelas ausentes
     for (const table of requiredTables) {
       if (!existingTables.includes(table.name.toLowerCase())) {
         console.log(`❌ Tabela ${table.name} NÃO ENCONTRADA - ${table.description}`);
@@ -43,7 +39,6 @@ async function checkAndCreateTables() {
       }
     }
     
-    // Verificar novamente após criação
     const updatedTables = await client.query(`
       SELECT table_name 
       FROM information_schema.tables 

@@ -31,7 +31,6 @@ class AgenteService {
     try {
       this.adicionarMensagem("🚀 Iniciando processamento de conta a pagar...");
 
-      // ========== VERIFICAÇÃO DO FORNECEDOR ==========
       this.adicionarMensagem("🔍 Verificando FORNECEDOR no banco de dados...");
       const fornecedor = await databaseService.verificarFornecedor(
         dadosNota.fornecedor.razaoSocial,
@@ -50,7 +49,6 @@ class AgenteService {
         this.adicionarMensagem(`✅ FORNECEDOR CRIADO - ID: ${idFornecedor}`);
       }
 
-      // ========== VERIFICAÇÃO DO FATURADO ==========
       this.adicionarMensagem("🔍 Verificando FATURADO no banco de dados...");
       const faturado = await databaseService.verificarFaturado(
         dadosNota.faturado?.nomeCompleto || dadosNota.cliente?.nome,
@@ -72,7 +70,6 @@ class AgenteService {
         this.adicionarMensagem(`✅ FATURADO CRIADO - ID: ${idFaturado}`);
       }
 
-      // ========== VERIFICAÇÃO DAS CLASSIFICAÇÕES DE DESPESA ==========
       const idsClassificacoes = [];
       const classificacoes = dadosNota.classificacaoDespesa || ['OUTRAS_DESPESAS'];
 
@@ -91,7 +88,6 @@ class AgenteService {
         idsClassificacoes.push(idClassificacao);
       }
 
-      // ========== CRIAÇÃO DO MOVIMENTO ==========
       this.adicionarMensagem("💾 CRIANDO UM NOVO REGISTRO DO MOVIMENTO...");
       const idMovimento = await databaseService.criarMovimentoConta({
         tipo: 'APAGAR',
@@ -104,18 +100,15 @@ class AgenteService {
 
       this.adicionarMensagem(`✅ MOVIMENTO CRIADO - ID: ${idMovimento}`);
 
-      // ========== VINCULAR CLASSIFICAÇÕES AO MOVIMENTO ==========
       for (const idClassificacao of idsClassificacoes) {
         await databaseService.vincularClassificacao(idMovimento, idClassificacao);
       }
       this.adicionarMensagem(`✅ CLASSIFICAÇÕES VINCULADAS - ${idsClassificacoes.length} categorias`);
 
-      // ========== CRIAÇÃO DAS PARCELAS ==========
       this.adicionarMensagem("📅 Criando parcelas...");
       await databaseService.criarParcelas(idMovimento, dadosNota.parcelas);
       this.adicionarMensagem(`✅ PARCELAS CRIADAS - ${dadosNota.parcelas?.length || 0} parcelas`);
 
-      // ========== MENSAGEM FINAL DE CONFIRMAÇÃO ==========
       this.adicionarMensagem(`🎉 REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: ${idMovimento}`);
 
       return {
@@ -159,19 +152,16 @@ class AgenteService {
     }
   }
 
-  //GARANTIR QUE A FUNÇÃO EXISTA COMO MÉTODO DA CLASSE
   async analisarEProcessarNota(pdfText, nomeArquivo) {
     try {
       this.adicionarMensagem("🤖 Gemini AI analisando nota fiscal...");
       
-      // Usar o serviço Gemini existente
       const resultadoGemini = await analyzeWithGemini(pdfText);
       
       this.adicionarMensagem("📊 Análise do Gemini concluída");
       this.adicionarMensagem(`• Fornecedor: ${resultadoGemini.fornecedor?.razaoSocial}`);
       this.adicionarMensagem(`• Valor Total: R$ ${resultadoGemini.valorTotal}`);
 
-      // Garantir que temos os dados mínimos necessários
       if (!resultadoGemini.fornecedor) {
         resultadoGemini.fornecedor = { razaoSocial: 'FORNECEDOR NÃO IDENTIFICADO', cnpj: 'N/A' };
       }
@@ -184,7 +174,6 @@ class AgenteService {
         }];
       }
 
-      // Processar como conta a pagar
       const resultado = await this.processarContaPagar(resultadoGemini);
       
       return {
@@ -203,16 +192,13 @@ class AgenteService {
     }
   }
 
-  // MÉTODO PARA OBTER HISTÓRICO DE MENSAGENS
   obterMensagens() {
     return this.mensagens;
   }
 
-  // MÉTODO PARA LIMPAR HISTÓRICO
   limparHistorico() {
     this.limparMensagens();
   }
 }
 
-// CORREÇÃO: Exportar a instância da classe corretamente
 module.exports = new AgenteService();

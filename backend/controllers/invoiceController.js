@@ -11,7 +11,6 @@ const processInvoice = async (req, res) => {
 
     console.log('📁 Processando arquivo:', req.file.originalname);
 
-    // Extrair texto do PDF
     const pdfText = await extractTextFromPDF(req.file.path);
     
     if (!pdfText || pdfText.trim().length < 50) {
@@ -22,13 +21,11 @@ const processInvoice = async (req, res) => {
     
     console.log('📄 Texto extraído do PDF:', pdfText.substring(0, 500) + '...');
     
-    // Processar com Agente Inteligente
     const resultado = await agenteService.analisarEProcessarNota(
       pdfText, 
       req.file.originalname
     );
     
-    // Salvar no histórico se foi bem sucedido
     if (resultado.sucesso) {
       const historicoEntry = {
         ...resultado,
@@ -39,7 +36,6 @@ const processInvoice = async (req, res) => {
       saveToHistory(historicoEntry);
     }
     
-    // Limpar arquivo temporário
     try {
       fs.unlinkSync(req.file.path);
       console.log('🧹 Arquivo temporário removido');
@@ -47,10 +43,9 @@ const processInvoice = async (req, res) => {
       console.warn('Aviso ao limpar arquivo temporário:', cleanupError);
     }
     
-    // ✅ FORMATAR RESPOSTA CONFORME REQUISITOS ESPECÍFICOS - CORRIGIDO
     const respostaFormatada = {
       success: resultado.sucesso,
-      // 🔍 MENSAGENS DE PROCESSAMENTO (FORMATO EXATO SOLICITADO)
+
       processamento: {
         mensagens: resultado.mensagens?.map(msg => msg.texto) || [],
         etapas: {
@@ -61,24 +56,22 @@ const processInvoice = async (req, res) => {
         },
         resumo: `REGISTRO LANÇADO COM SUCESSO - ID MOVIMENTO: ${resultado.idMovimento || 'N/A'}`
       },
-      // 📊 DADOS EXTRAÍDOS - CORREÇÃO: INCLUIR TODOS OS CAMPOS
+
       dadosExtraidos: resultado.dadosNota ? {
         fornecedor: resultado.dadosNota.fornecedor,
         faturado: resultado.dadosNota.faturado || resultado.dadosNota.cliente,
         valorTotal: resultado.dadosNota.valorTotal,
         numeroNotaFiscal: resultado.dadosNota.numeroNotaFiscal,
         dataEmissao: resultado.dadosNota.dataEmissao,
-        // ✅ CAMPOS QUE ESTAVAM FALTANDO:
         produtos: resultado.dadosNota.produtos || [],
         parcelas: resultado.dadosNota.parcelas || [],
         classificacaoDespesa: resultado.dadosNota.classificacaoDespesa || ["INSUMOS_AGRICOLAS"],
         quantidadeParcelas: resultado.dadosNota.parcelas?.length || 0,
         valorFrete: resultado.dadosNota.valorFrete || 0,
-        // ✅ NOVOS CAMPOS:
         tipoConta: resultado.dadosNota.tipoConta || "APAGAR",
         naturezaOperacao: resultado.dadosNota.naturezaOperacao || "N/A"
       } : null,
-      // 📋 METADADOS
+      
       metadata: {
         fileName: req.file.originalname,
         processedAt: new Date().toISOString(),
@@ -86,7 +79,6 @@ const processInvoice = async (req, res) => {
       }
     };
 
-    // 🎯 RETORNAR RESPOSTA FORMATADA
     if (resultado.sucesso) {
       console.log(`✅ Processamento concluído - Movimento ID: ${resultado.idMovimento}`);
       console.log('📦 Dados enviados ao frontend:', {
@@ -107,7 +99,6 @@ const processInvoice = async (req, res) => {
   } catch (error) {
     console.error('💥 Erro crítico no processamento:', error);
     
-    // Limpar arquivo em caso de erro
     if (req.file && fs.existsSync(req.file.path)) {
       try {
         fs.unlinkSync(req.file.path);
@@ -129,7 +120,6 @@ const processInvoice = async (req, res) => {
   }
 };
 
-// 📚 FUNÇÕES DE HISTÓRICO - CORRIGIDAS
 const getHistoryList = async (req, res) => {
   try {
     const history = getHistory();
@@ -199,7 +189,6 @@ const deleteHistory = async (req, res) => {
   }
 };
 
-// Exportar TODAS as funções
 module.exports = { 
   processInvoice, 
   getHistoryList, 

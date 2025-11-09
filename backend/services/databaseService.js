@@ -2,11 +2,9 @@ const { Client } = require('pg');
 
 class DatabaseService {
   constructor() {
-    // Verificar se está rodando em Docker
     const isDocker = process.env.RUNNING_IN_DOCKER === 'true';
     console.log('Ambiente Docker:', isDocker ? 'Sim' : 'Não');
     
-    // Forçar uso de IPv4 em vez de IPv6
     const pgHost = isDocker ? 'postgres' : (process.env.DB_HOST || '127.0.0.1');
     console.log('Conectando ao PostgreSQL em:', pgHost);
     
@@ -25,14 +23,12 @@ class DatabaseService {
     try {
       await this.client.connect();
       console.log('✅ Conectado ao PostgreSQL');
-      // Verificar estrutura ao conectar
       await this.verificarEstruturaTabelas();
     } catch (error) {
       console.error('❌ Erro ao conectar com PostgreSQL:', error);
     }
   }
 
-  // ========== FUNÇÕES PARA FORNECEDOR CORRIGIDAS ==========
 
   async verificarFornecedor(razaoSocial, cnpj) {
     try {
@@ -77,13 +73,11 @@ class DatabaseService {
 
   async criarFornecedor(razaoSocial, cnpj) {
     try {
-      // Verificar se já existe alguém com este CNPJ (independente do tipo)
       const verificaExistente = await this.verificarFornecedor(razaoSocial, cnpj);
       
       if (verificaExistente.existe) {
         console.log(`⚠️  CNPJ/CPF ${cnpj} já existe na base como ${verificaExistente.tipo}. ID: ${verificaExistente.id}`);
         
-        // Se já existe mas não é FORNECEDOR, atualizar o tipo
         if (verificaExistente.tipo !== 'FORNECEDOR') {
           console.log(`🔄 Atualizando tipo de ${verificaExistente.tipo} para FORNECEDOR`);
           
@@ -98,7 +92,6 @@ class DatabaseService {
         return verificaExistente.id;
       }
 
-      // Se não existe, criar novo
       const result = await this.client.query(
         'INSERT INTO PESSOAS (TIPO, RAZAO_SOCIAL, CNPJ_CPF, ATIVO, DATA_CADASTRO) VALUES ($1, $2, $3, TRUE, NOW()) RETURNING ID',
         ['FORNECEDOR', razaoSocial, cnpj]
@@ -112,7 +105,6 @@ class DatabaseService {
       if (error.message.includes('duplicate key value violates unique constraint')) {
         console.error(`❌ CNPJ/CPF ${cnpj} já existe na base de dados`);
         
-        // Tentar recuperar o ID existente
         try {
           const recuperaExistente = await this.client.query(
             'SELECT ID FROM PESSOAS WHERE CNPJ_CPF = $1 LIMIT 1',
@@ -137,7 +129,6 @@ class DatabaseService {
 
   async criarMovimentoConta(movimentoData) {
     try {
-      // Detectar qual coluna de documento existe na tabela (NUMERO_NOTA_FISCAL vs NUMERO_DOCUMENTO)
       const colsResult = await this.client.query(`
         SELECT column_name FROM information_schema.columns
         WHERE table_schema = 'public' AND table_name = 'movimentocontas'
@@ -148,7 +139,6 @@ class DatabaseService {
       const docCol = hasNumeroNota ? 'NUMERO_NOTA_FISCAL' : (hasNumeroDocumento ? 'NUMERO_DOCUMENTO' : null);
 
       if (!docCol) {
-        // Não há coluna de documento; inserir sem esse campo
         const result = await this.client.query(
           `INSERT INTO MOVIMENTOCONTAS 
            (TIPO, ID_PESSOA, DATA_EMISSAO, VALOR_TOTAL, OBSERVACAO, DATA_CADASTRO) 
@@ -164,7 +154,6 @@ class DatabaseService {
         return Number(result.rows[0].id);
       }
 
-      // Preparar valor do documento/nota
       const numeroDocumento = (
         movimentoData.numeroNotaFiscal ??
         movimentoData.numeroDocumento ??
@@ -210,7 +199,6 @@ class DatabaseService {
       let parcelaIndex = 1;
       
       for (const parcela of parcelas) {
-        // 🔥 CORREÇÃO CRÍTICA: Garantir que todos os campos obrigatórios tenham valores válidos
         const numeroParcela = parcela.numeroParcela || parcelaIndex;
         const dataVencimento = parcela.dataVencimento || new Date().toISOString().split('T')[0];
         const valorParcela = parcela.valor || parcela.valorParcela || 0;
@@ -218,7 +206,6 @@ class DatabaseService {
         const identificacao = `${idMovimento}_${numeroParcela}`;
         const dataVencimentoFormatada = this.formatarDataParaPostgres(dataVencimento);
         
-        // 🔥 VALIDAÇÃO EXTRA: Garantir que numeroParcela não seja null/undefined
         if (numeroParcela === null || numeroParcela === undefined) {
           console.error('❌ ERRO: numeroParcela é null/undefined:', parcela);
           throw new Error('numeroParcela não pode ser null ou undefined');
@@ -265,8 +252,6 @@ class DatabaseService {
     }
   }
 
-  // ========== FUNÇÕES PARA FATURADO CORRIGIDAS ==========
-
   async verificarFaturado(nomeCompleto, cpf) {
     try {
       const query = `
@@ -310,17 +295,14 @@ class DatabaseService {
 
   async criarFaturado(nomeCompleto, cpf) {
     try {
-      // 🔥 CORREÇÃO: Verificar se já existe alguém com este CPF (independente do tipo)
       const verificaExistente = await this.verificarFaturado(nomeCompleto, cpf);
       
       if (verificaExistente.existe) {
         console.log(`⚠️  CPF/CNPJ ${cpf} já existe na base como ${verificaExistente.tipo}. ID: ${verificaExistente.id}`);
         
-        // Se já existe mas não é FATURADO, podemos atualizar o tipo ou retornar o ID existente
         if (verificaExistente.tipo !== 'FATURADO') {
           console.log(`🔄 Atualizando tipo de ${verificaExistente.tipo} para FATURADO`);
           
-          // Opção 1: Atualizar o tipo para FATURADO
           await this.client.query(
             'UPDATE PESSOAS SET TIPO = $1 WHERE ID = $2',
             ['FATURADO', verificaExistente.id]
@@ -332,7 +314,6 @@ class DatabaseService {
         return verificaExistente.id;
       }
 
-      // Se não existe, criar novo
       const result = await this.client.query(
         'INSERT INTO PESSOAS (TIPO, RAZAO_SOCIAL, CNPJ_CPF, ATIVO, DATA_CADASTRO) VALUES ($1, $2, $3, TRUE, NOW()) RETURNING ID',
         ['FATURADO', nomeCompleto, cpf]
@@ -343,11 +324,9 @@ class DatabaseService {
       
       return novoId;
     } catch (error) {
-      // 🔥 CORREÇÃO: Tratar erro de duplicidade de forma mais específica
       if (error.message.includes('duplicate key value violates unique constraint')) {
         console.error(`❌ CPF/CNPJ ${cpf} já existe na base de dados`);
         
-        // Tentar recuperar o ID existente
         try {
           const recuperaExistente = await this.client.query(
             'SELECT ID FROM PESSOAS WHERE CNPJ_CPF = $1 LIMIT 1',
@@ -369,8 +348,6 @@ class DatabaseService {
       throw new Error('Erro ao criar faturado: ' + error.message);
     }
   }
-
-  // ========== FUNÇÕES PARA CLASSIFICAÇÃO ==========
 
   async verificarClassificacao(tipo, descricao) {
     try {
@@ -396,10 +373,8 @@ class DatabaseService {
 
   async criarClassificacao(tipo, descricao) {
     try {
-      // Garantir descrição válida para evitar NULL em colunas obrigatórias
       const safeDescricao = (descricao && descricao.trim()) ? descricao.trim() : 'NAO_CLASSIFICADA';
 
-      // Verificar se a coluna NOME existe na tabela CLASSIFICACAO
       const checkNomeColumn = `
         SELECT 1 FROM information_schema.columns 
         WHERE table_schema = 'public' 
@@ -413,11 +388,9 @@ class DatabaseService {
       let insertQuery;
       let params;
       if (hasNomeColumn) {
-        // Inserir preenchendo NOME (não nulo) e DESCRICAO com o mesmo valor
         insertQuery = 'INSERT INTO CLASSIFICACAO (NOME, TIPO, DESCRICAO, ATIVO, DATA_CADASTRO) VALUES ($1, $2, $3, TRUE, NOW()) RETURNING ID';
         params = [safeDescricao, tipo, safeDescricao];
       } else {
-        // Esquema antigo sem coluna NOME
         insertQuery = 'INSERT INTO CLASSIFICACAO (TIPO, DESCRICAO, ATIVO, DATA_CADASTRO) VALUES ($1, $2, TRUE, NOW()) RETURNING ID';
         params = [tipo, safeDescricao];
       }
@@ -431,7 +404,6 @@ class DatabaseService {
 
   async vincularClassificacao(idMovimento, idClassificacao, valor = 0) {
     try {
-      // Primeiro, verificar a estrutura da tabela
       const tableInfo = await this.client.query(`
         SELECT column_name, is_nullable, data_type
         FROM information_schema.columns
@@ -443,7 +415,6 @@ class DatabaseService {
       const columns = tableInfo.rows.map(row => row.column_name);
       const hasValorColumn = columns.includes('valor');
       
-      // Verificar se já existe o vínculo
       const checkQuery = `
         SELECT 1 FROM MOVIMENTO_CLASSIFICACAO 
         WHERE ID_MOVIMENTO = $1 AND ID_CLASSIFICACAO = $2
@@ -476,8 +447,6 @@ class DatabaseService {
     }
   }
 
-  // ========== FUNÇÕES AUXILIARES CORRIGIDAS ==========
-
   formatarDataParaPostgres(dataString) {
     if (!dataString) {
       return new Date().toISOString().split('T')[0];
@@ -485,11 +454,9 @@ class DatabaseService {
     
     try {
       if (dataString.includes('/')) {
-        // Formato DD/MM/YYYY para YYYY-MM-DD
         const [dia, mes, ano] = dataString.split('/');
         const dataFormatada = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
         
-        // Validar se a data é válida
         const dataValida = new Date(dataFormatada);
         if (isNaN(dataValida.getTime())) {
           throw new Error('Data inválida após conversão');
@@ -497,7 +464,6 @@ class DatabaseService {
         
         return dataFormatada;
       } else if (dataString.includes('-')) {
-        // Já está em formato compatível com PostgreSQL
         const dataValida = new Date(dataString);
         if (isNaN(dataValida.getTime())) {
           throw new Error('Data inválida');
@@ -511,8 +477,6 @@ class DatabaseService {
       return new Date().toISOString().split('T')[0];
     }
   }
-
-  // ========== VERIFICAÇÃO DE ESTRUTURA MELHORADA ==========
 
   async verificarEstruturaTabelas() {
     try {
@@ -542,7 +506,6 @@ class DatabaseService {
           if (existe) {
             console.log(`✅ Tabela ${tabela.nome} - ${tabela.descricao}`);
             
-            // Verificar estrutura detalhada da PARCELACONTAS
             if (tabela.nome === 'PARCELACONTAS') {
               const columnsResult = await this.client.query(`
                 SELECT column_name, data_type, is_nullable
@@ -571,8 +534,6 @@ class DatabaseService {
       return false;
     }
   }
-
-  // ========== NOVAS FUNÇÕES PARA DEBUG E MONITORAMENTO ==========
 
   async obterDetalhesPessoa(id) {
     try {
@@ -636,8 +597,6 @@ class DatabaseService {
     }
   }
 
-  // ========== FUNÇÃO PARA FECHAR CONEXÃO ==========
-
   async disconnect() {
     try {
       await this.client.end();
@@ -646,8 +605,6 @@ class DatabaseService {
       console.error('Erro ao fechar conexão:', error);
     }
   }
-
-  // ========== FUNÇÃO PARA VERIFICAR SAÚDE DO BANCO ==========
 
   async healthCheck() {
     try {

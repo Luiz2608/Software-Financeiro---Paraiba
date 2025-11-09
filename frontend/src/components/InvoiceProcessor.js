@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { processInvoice } from '../services/api';
 import HistoryPanel from './HistoryPanel';
+import Agente3 from './Agente3/Agente3'; // ← ADICIONAR ESTA LINHA
 import './InvoiceProcessor.css';
 
 const InvoiceProcessor = () => {
@@ -9,6 +10,7 @@ const InvoiceProcessor = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showHistory, setShowHistory] = useState(false);
+  const [activeTab, setActiveTab] = useState('upload'); // ← ADICIONAR ESTE STATE
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -69,7 +71,6 @@ const InvoiceProcessor = () => {
         }
       });
       
-      // Scroll para o resultado
       setTimeout(() => {
         const resultElement = document.querySelector('.result-container');
         if (resultElement) {
@@ -83,7 +84,6 @@ const InvoiceProcessor = () => {
     }
   };
 
-  // USAR PRODUTOS DIRETAMENTE DA RESPOSTA
   const getProducts = () => {
     if (!result?.dadosExtraidos?.produtos || !Array.isArray(result.dadosExtraidos.produtos)) {
       console.log('❌ Nenhum produto encontrado na resposta:', result?.dadosExtraidos);
@@ -94,7 +94,6 @@ const InvoiceProcessor = () => {
     return result.dadosExtraidos.produtos;
   };
 
-  // USAR PARCELAS DIRETAMENTE DA RESPOSTA
   const getParcelas = () => {
     if (!result?.dadosExtraidos?.parcelas || !Array.isArray(result.dadosExtraidos.parcelas)) {
       console.log('❌ Nenhuma parcela encontrada na resposta:', result?.dadosExtraidos);
@@ -105,7 +104,6 @@ const InvoiceProcessor = () => {
     return result.dadosExtraidos.parcelas;
   };
 
-  // USAR INFORMAÇÕES DA NOTA FISCAL DA RESPOSTA
   const getInvoiceInfo = () => {
     if (!result?.dadosExtraidos) {
       return {
@@ -139,51 +137,46 @@ const InvoiceProcessor = () => {
       if (typeof mensagem === 'string') {
         mensagemTexto = mensagem;
       } else if (typeof mensagem === 'object' && mensagem !== null) {
-        // Se for objeto, usar a propriedade 'texto' ou converter para string
         mensagemTexto = mensagem.texto || JSON.stringify(mensagem);
       } else {
         console.warn('⚠️ Mensagem com tipo inválido:', mensagem);
         continue;
       }
       
-      // Para fornecedor
       if (tipo === 'fornecedor' && mensagemTexto.includes('FORNECEDOR:')) {
         if (mensagemTexto.includes('EXISTE - ID:')) {
           const existingId = mensagemTexto.match(/EXISTE - ID: (\d+)/);
           if (existingId && existingId[1] === id) {
-            return false; // Já existia
+            return false; 
           }
         } else if (mensagemTexto.includes('NÃO EXISTE')) {
-          return true; // É novo
+          return true;
         }
       }
       
-      // Para faturado
       if (tipo === 'faturado' && mensagemTexto.includes('FATURADO:')) {
         if (mensagemTexto.includes('EXISTE - ID:')) {
           const existingId = mensagemTexto.match(/EXISTE - ID: (\d+)/);
           if (existingId && existingId[1] === id) {
-            return false; // Já existia
+            return false;
           }
         } else if (mensagemTexto.includes('NÃO EXISTE')) {
-          return true; // É novo
+          return true;
         }
       }
       
-      // Para classificação
       if (tipo === 'classificacao' && mensagemTexto.includes('DESPESA:')) {
         if (mensagemTexto.includes('EXISTE - ID:')) {
-          return false; // Já existia
+          return false;
         } else if (mensagemTexto.includes('NÃO EXISTE')) {
-          return true; // É novo
+          return true;
         }
       }
     }
     
-    return true; // Assume novo por padrão
+    return true;
   };
 
-  // OBTER ID E STATUS DO FORNECEDOR DO PROCESSAMENTO
   const getSupplierInfo = () => {
     if (!result?.processamento?.etapas?.fornecedor) {
       return {
@@ -202,7 +195,6 @@ const InvoiceProcessor = () => {
       if (fornecedorText.includes('CRIADO - ID:')) {
         const idMatch = fornecedorText.match(/CRIADO - ID: (\d+)/);
         id = idMatch ? idMatch[1] : 'N/A';
-        // Verificar nas mensagens se realmente era novo
         isNew = checkIfNewFromMessages('fornecedor', id);
       } else if (fornecedorText.includes('EXISTE - ID:')) {
         const idMatch = fornecedorText.match(/EXISTE - ID: (\d+)/);
@@ -220,7 +212,6 @@ const InvoiceProcessor = () => {
     };
   };
 
-  // OBTER ID E STATUS DO CLIENTE/FATURADO DO PROCESSAMENTO
   const getClientInfo = () => {
     if (!result?.processamento?.etapas?.faturado) {
       return {
@@ -239,7 +230,6 @@ const InvoiceProcessor = () => {
       if (faturadoText.includes('CRIADO - ID:')) {
         const idMatch = faturadoText.match(/CRIADO - ID: (\d+)/);
         id = idMatch ? idMatch[1] : 'N/A';
-        // Verificar nas mensagens se realmente era novo
         isNew = checkIfNewFromMessages('faturado', id);
       } else if (faturadoText.includes('EXISTE - ID:')) {
         const idMatch = faturadoText.match(/EXISTE - ID: (\d+)/);
@@ -257,7 +247,6 @@ const InvoiceProcessor = () => {
     };
   };
 
-  // OBTER DADOS DO FORNECEDOR DA RESPOSTA
   const getSupplierData = () => {
     if (!result?.dadosExtraidos?.fornecedor) {
       return {
@@ -272,7 +261,6 @@ const InvoiceProcessor = () => {
     };
   };
 
-  // OBTER DADOS DO CLIENTE/FATURADO DA RESPOSTA
   const getClientData = () => {
     if (!result?.dadosExtraidos?.faturado) {
       return {
@@ -291,7 +279,6 @@ const InvoiceProcessor = () => {
     };
   };
 
-  // USAR CLASSIFICAÇÃO DIRETAMENTE DA RESPOSTA
   const getClassification = () => {
     if (!result?.dadosExtraidos?.classificacaoDespesa || !Array.isArray(result.dadosExtraidos.classificacaoDespesa)) {
       return ["INSUMOS_AGRICOLAS"]; // Valor padrão
@@ -300,7 +287,6 @@ const InvoiceProcessor = () => {
     return result.dadosExtraidos.classificacaoDespesa;
   };
 
-  // OBTER IDS E STATUS DAS CLASSIFICAÇÕES DO PROCESSAMENTO
   const getClassificationInfo = () => {
     if (!result?.processamento?.etapas?.despesa) {
       return {
@@ -320,7 +306,6 @@ const InvoiceProcessor = () => {
         const idsMatch = despesaText.match(/CRIADAS - IDs: (.+)/);
         if (idsMatch && idsMatch[1]) {
           ids = idsMatch[1].split(', ').map(id => id.trim());
-          // Verificar nas mensagens se realmente eram novas
           isNew = ids.some(id => checkIfNewFromMessages('classificacao', id));
         }
       } else if (despesaText === 'EXISTENTE') {
@@ -360,11 +345,10 @@ const InvoiceProcessor = () => {
   const formatDate = (dateString) => {
     if (!dateString || dateString === 'N/A') return 'N/A';
     try {
-      // Se a data já está no formato brasileiro, retorna como está
       if (dateString.includes('/')) {
         return dateString;
       }
-      // Se está em formato ISO, converte
+
       const date = new Date(dateString);
       return date.toLocaleDateString('pt-BR');
     } catch {
@@ -372,7 +356,6 @@ const InvoiceProcessor = () => {
     }
   };
 
-  // FORMATAR TIPO DE CONTA
   const formatTipoConta = (tipo) => {
     const tipos = {
       'APAGAR': '🔄 Contas a Pagar',
@@ -381,7 +364,6 @@ const InvoiceProcessor = () => {
     return tipos[tipo] || tipo;
   };
 
-  // OBTER CLASSE CSS DO TIPO DE CONTA
   const getTipoContaClass = (tipo) => {
     const classes = {
       'APAGAR': 'conta-pagar',
@@ -548,7 +530,6 @@ const InvoiceProcessor = () => {
     );
   };
 
-  // CORREÇÃO: Função para extrair texto das mensagens (pode ser objeto ou string)
   const getMessageText = (mensagem) => {
     if (typeof mensagem === 'string') {
       return mensagem;
@@ -567,152 +548,179 @@ const InvoiceProcessor = () => {
     setShowHistory(false);
   };
 
-  // Render principal
-  const invoiceInfo = getInvoiceInfo();
-  const supplierData = getSupplierData();
-  const clientData = getClientData();
-  const supplierInfo = getSupplierInfo();
-  const clientInfo = getClientInfo();
-  const classificationInfo = getClassificationInfo();
+  // RENDERIZAÇÃO DA ABA UPLOAD (SEU CÓDIGO ORIGINAL)
+  const renderUploadTab = () => {
+    const invoiceInfo = getInvoiceInfo();
+    const supplierData = getSupplierData();
+    const clientData = getClientData();
+    const supplierInfo = getSupplierInfo();
+    const clientInfo = getClientInfo();
+    const classificationInfo = getClassificationInfo();
+
+    return (
+      <div>
+        <h1>LSR - NF</h1>
+        <p>Faça upload de uma nota fiscal em PDF</p>
+        
+        <div className="history-button-container">
+          <button type="button" onClick={handleShowHistory} className="history-button">
+            📋 Ver Histórico
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="upload-form">
+          <div className="file-input-container">
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="file-input"
+              id="pdfFile"
+            />
+            <label htmlFor="pdfFile" className="file-label">
+              {file ? file.name : 'Selecionar PDF'}
+            </label>
+          </div>
+          
+          <button type="submit" disabled={loading || !file} className="process-button">
+            {loading ? 'Processando...' : 'Extrair Dados'}
+          </button>
+        </form>
+
+        {error && <div className="error-message">{error}</div>}
+
+        {result && result.success && (
+          <div className="result-container">
+            <h2>✅ Processamento Concluído com Sucesso!</h2>
+            
+            {renderProcessamentoInfo()}
+
+            {/* Informações Básicas - ATUALIZADA COM TIPO DE CONTA */}
+            <div className="summary-section">
+              <h3>Informações da Nota Fiscal</h3>
+              <div className="summary-grid">
+                <div className="summary-item">
+                  <span className="summary-label">Número NF:</span>
+                  <span className="summary-value">{invoiceInfo.numero}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Valor Total:</span>
+                  <span className="summary-value">{formatCurrency(invoiceInfo.valorTotal)}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Data Emissão:</span>
+                  <span className="summary-value">{formatDate(invoiceInfo.dataEmissao)}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Tipo de Conta:</span>
+                  <span className={`summary-value ${getTipoContaClass(invoiceInfo.tipoConta)}`}>
+                    {formatTipoConta(invoiceInfo.tipoConta)}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Natureza:</span>
+                  <span className="summary-value">{invoiceInfo.naturezaOperacao}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Status:</span>
+                  <span className="summary-value success">Processada com sucesso</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Fornecedor - AGORA COM VERIFICAÇÃO DAS MENSAGENS */}
+            <div className="supplier-section">
+              <h3>Fornecedor</h3>
+              <div className="supplier-info">
+                <p><strong>Razão Social:</strong> <span className="info-value">{supplierData.razaoSocial}</span></p>
+                <p><strong>CNPJ:</strong> <span className="info-value">{formatCNPJ(supplierData.cnpj)}</span></p>
+                <p><strong>ID no Sistema:</strong> <span className="info-value">{supplierInfo.id}</span></p>
+                <p><strong>Status no Sistema:</strong> <span className={`info-value ${supplierInfo.isNew ? 'warning' : 'success'}`}>
+                  {supplierInfo.isNew ? '⚠️ Novo Cadastro' : '✓ Já Cadastrado'}
+                </span></p>
+              </div>
+            </div>
+
+            {/* Cliente/Faturado - AGORA COM VERIFICAÇÃO DAS MENSAGENS */}
+            <div className="client-section">
+              <h3>Cliente/Faturado</h3>
+              <div className="client-info">
+                <p><strong>Nome:</strong> <span className="info-value">{clientData.nome}</span></p>
+                <p><strong>CPF/CNPJ:</strong> <span className="info-value">
+                  {clientData.documento?.length === 11 ? formatCPF(clientData.documento) : formatCNPJ(clientData.documento)}
+                </span></p>
+                <p><strong>ID no Sistema:</strong> <span className="info-value">{clientInfo.id}</span></p>
+                <p><strong>Status no Sistema:</strong> <span className={`info-value ${clientInfo.isNew ? 'warning' : 'success'}`}>
+                  {clientInfo.isNew ? '⚠️ Novo Cadastro' : '✓ Já Cadastrado'}
+                </span></p>
+              </div>
+            </div>
+
+            {/* Produtos */}
+            {renderProducts()}
+
+            {/* Parcelas */}
+            {renderParcelas()}
+
+            {/* Classificação - COM VERIFICAÇÃO DAS MENSAGENS */}
+            {renderClassification()}
+
+            {/* Mensagens do Processamento - CORREÇÃO: Usar getMessageText */}
+            {result.processamento?.mensagens && (
+              <div className="messages-section">
+                <h3>Detalhes do Processamento</h3>
+                <div className="messages-container">
+                  {result.processamento.mensagens.map((msg, index) => (
+                    <div key={index} className="message-item">
+                      <span className="message-time">•</span>
+                      <span className="message-text">{getMessageText(msg)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Debug */}
+            <details className="json-details">
+              <summary>JSON Completo (Debug)</summary>
+              <pre className="result-json">
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            </details>
+          </div>
+        )}
+
+        <HistoryPanel 
+          isOpen={showHistory}
+          onClose={handleCloseHistory}
+          onSelectNote={handleSelectHistoryNote}
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="invoice-processor">
-      <h1>LSR - NF</h1>
-      <p>Faça upload de uma nota fiscal em PDF</p>
-      
-      <div className="history-button-container">
-        <button type="button" onClick={handleShowHistory} className="history-button">
-          📋 Ver Histórico
+      {/* MENU DE ABAS - NOVO */}
+      <div className="tabs-menu">
+        <button 
+          className={activeTab === 'upload' ? 'tab-active' : ''}
+          onClick={() => setActiveTab('upload')}
+        >
+          📤 Upload de Notas
+        </button>
+        <button 
+          className={activeTab === 'agente3' ? 'tab-active' : ''}
+          onClick={() => setActiveTab('agente3')}
+        >
+          🤖 Agente IA
         </button>
       </div>
+
+      {/* CONTEÚDO DAS ABAS */}
+      {activeTab === 'upload' && renderUploadTab()}
       
-      <form onSubmit={handleSubmit} className="upload-form">
-        <div className="file-input-container">
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleFileChange}
-            className="file-input"
-            id="pdfFile"
-          />
-          <label htmlFor="pdfFile" className="file-label">
-            {file ? file.name : 'Selecionar PDF'}
-          </label>
-        </div>
-        
-        <button type="submit" disabled={loading || !file} className="process-button">
-          {loading ? 'Processando...' : 'Extrair Dados'}
-        </button>
-      </form>
-
-      {error && <div className="error-message">{error}</div>}
-
-      {result && result.success && (
-        <div className="result-container">
-          <h2>✅ Processamento Concluído com Sucesso!</h2>
-          
-          {renderProcessamentoInfo()}
-
-          {/* Informações Básicas - ATUALIZADA COM TIPO DE CONTA */}
-          <div className="summary-section">
-            <h3>Informações da Nota Fiscal</h3>
-            <div className="summary-grid">
-              <div className="summary-item">
-                <span className="summary-label">Número NF:</span>
-                <span className="summary-value">{invoiceInfo.numero}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Valor Total:</span>
-                <span className="summary-value">{formatCurrency(invoiceInfo.valorTotal)}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Data Emissão:</span>
-                <span className="summary-value">{formatDate(invoiceInfo.dataEmissao)}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Tipo de Conta:</span>
-                <span className={`summary-value ${getTipoContaClass(invoiceInfo.tipoConta)}`}>
-                  {formatTipoConta(invoiceInfo.tipoConta)}
-                </span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Natureza:</span>
-                <span className="summary-value">{invoiceInfo.naturezaOperacao}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Status:</span>
-                <span className="summary-value success">Processada com sucesso</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Fornecedor - AGORA COM VERIFICAÇÃO DAS MENSAGENS */}
-          <div className="supplier-section">
-            <h3>Fornecedor</h3>
-            <div className="supplier-info">
-              <p><strong>Razão Social:</strong> <span className="info-value">{supplierData.razaoSocial}</span></p>
-              <p><strong>CNPJ:</strong> <span className="info-value">{formatCNPJ(supplierData.cnpj)}</span></p>
-              <p><strong>ID no Sistema:</strong> <span className="info-value">{supplierInfo.id}</span></p>
-              <p><strong>Status no Sistema:</strong> <span className={`info-value ${supplierInfo.isNew ? 'warning' : 'success'}`}>
-                {supplierInfo.isNew ? '⚠️ Novo Cadastro' : '✓ Já Cadastrado'}
-              </span></p>
-            </div>
-          </div>
-
-          {/* Cliente/Faturado - AGORA COM VERIFICAÇÃO DAS MENSAGENS */}
-          <div className="client-section">
-            <h3>Cliente/Faturado</h3>
-            <div className="client-info">
-              <p><strong>Nome:</strong> <span className="info-value">{clientData.nome}</span></p>
-              <p><strong>CPF/CNPJ:</strong> <span className="info-value">
-                {clientData.documento?.length === 11 ? formatCPF(clientData.documento) : formatCNPJ(clientData.documento)}
-              </span></p>
-              <p><strong>ID no Sistema:</strong> <span className="info-value">{clientInfo.id}</span></p>
-              <p><strong>Status no Sistema:</strong> <span className={`info-value ${clientInfo.isNew ? 'warning' : 'success'}`}>
-                {clientInfo.isNew ? '⚠️ Novo Cadastro' : '✓ Já Cadastrado'}
-              </span></p>
-            </div>
-          </div>
-
-          {/* Produtos */}
-          {renderProducts()}
-
-          {/* Parcelas */}
-          {renderParcelas()}
-
-          {/* Classificação - COM VERIFICAÇÃO DAS MENSAGENS */}
-          {renderClassification()}
-
-          {/* Mensagens do Processamento - CORREÇÃO: Usar getMessageText */}
-          {result.processamento?.mensagens && (
-            <div className="messages-section">
-              <h3>Detalhes do Processamento</h3>
-              <div className="messages-container">
-                {result.processamento.mensagens.map((msg, index) => (
-                  <div key={index} className="message-item">
-                    <span className="message-time">•</span>
-                    <span className="message-text">{getMessageText(msg)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Debug */}
-          <details className="json-details">
-            <summary>JSON Completo (Debug)</summary>
-            <pre className="result-json">
-              {JSON.stringify(result, null, 2)}
-            </pre>
-          </details>
-        </div>
-      )}
-
-      <HistoryPanel 
-        isOpen={showHistory}
-        onClose={handleCloseHistory}
-        onSelectNote={handleSelectHistoryNote}
-      />
+      {activeTab === 'agente3' && <Agente3 />}
     </div>
   );
 };

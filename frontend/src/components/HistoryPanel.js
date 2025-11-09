@@ -43,7 +43,7 @@ const HistoryPanel = ({ onSelectNote, isOpen, onClose }) => {
         console.log('✅ Dados recebidos:', response.data);
         if (onSelectNote) {
           onSelectNote(response.data);
-          onClose(); // Fechar o painel após selecionar
+          onClose();
         }
       } else {
         console.error('❌ Resposta inválida:', response);
@@ -84,13 +84,11 @@ const HistoryPanel = ({ onSelectNote, isOpen, onClose }) => {
     }).format(value || 0);
   };
 
-  // CORREÇÃO: Função para acessar dados do preview de forma segura
   const getPreviewValue = (item, key) => {
     if (!item || !item.preview) return 'N/A';
     return item.preview[key] || 'N/A';
   };
 
-  // CORREÇÃO: Função para formatar tipo de conta
   const formatTipoConta = (tipo) => {
     const tipos = {
       'APAGAR': '🔄 Contas a Pagar',
@@ -124,7 +122,6 @@ const HistoryPanel = ({ onSelectNote, isOpen, onClose }) => {
         ) : (
           <div className="history-list">
             {history.map((item) => {
-              // CORREÇÃO: Acesso seguro aos dados
               const safeItem = item || {};
               const fornecedor = getPreviewValue(safeItem, 'fornecedor');
               const numeroNota = getPreviewValue(safeItem, 'numeroNota');

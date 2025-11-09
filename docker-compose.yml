@@ -45,13 +45,7 @@ services:
     networks:
       - app-network
     restart: unless-stopped
-    # HEALTH CHECK DESATIVADO TEMPORARIAMENTE
-    # healthcheck:
-    #   test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5
-    #   start_period: 60s
+    
     command: >
       sh -c "
         echo '🕒 Aguardando PostgreSQL ficar disponível...' &&

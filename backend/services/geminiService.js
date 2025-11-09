@@ -13,13 +13,13 @@ function normalizeNumber(value) {
   if (typeof value === 'number') return value;
   if (typeof value === 'string') {
     let s = value.trim();
-    // se tiver vírgula (formato brasileiro), remover pontos (milhares) e trocar vírgula por ponto
+
     if (s.includes(',') && s.includes('.')) {
       s = s.replace(/\./g, '').replace(',', '.');
     } else if (s.includes(',') && !s.includes('.')) {
       s = s.replace(',', '.');
     }
-    // Remove qualquer vírgula restante
+    
     s = s.replace(/,/g, '');
     const n = parseFloat(s);
     return Number.isNaN(n) ? null : n;
@@ -27,9 +27,6 @@ function normalizeNumber(value) {
   return null;
 }
 
-/**
- * Validação simples dos produtos - apenas verifica e loga problemas
- */
 function validateProducts(produtos, valorTotalNotaRaw) {
   if (!produtos || !Array.isArray(produtos)) {
     console.warn('⚠️ Nenhum produto encontrado para validar');
@@ -42,17 +39,14 @@ function validateProducts(produtos, valorTotalNotaRaw) {
   produtos.forEach((produto, idx) => {
     const logPrefix = `Produto ${idx + 1} (${produto.descricao?.substring(0, 30)}...)`;
 
-    // Normalizar valores
     const q = normalizeNumber(produto.quantidade);
     const u = normalizeNumber(produto.valorUnitario);
     const t = normalizeNumber(produto.valorTotal);
 
-    // Verificar se todos os valores são válidos
     if (Number.isFinite(q) && Number.isFinite(u) && Number.isFinite(t)) {
       const calculado = q * u;
       const diff = Math.abs(calculado - t);
       
-      // Verificar se a multiplicação bate
       if (diff > 0.01) {
         console.warn(`⚠️ ${logPrefix}: diferença encontrada (${q} x ${u} = ${calculado.toFixed(2)} vs ${t})`);
       } else {
@@ -66,7 +60,6 @@ function validateProducts(produtos, valorTotalNotaRaw) {
     }
   });
 
-  // Validar soma com valor total da nota
   if (valorTotalNota !== null && !Number.isNaN(valorTotalNota)) {
     const diff = Math.abs(soma - valorTotalNota);
     if (diff > 0.01) {
@@ -79,9 +72,6 @@ function validateProducts(produtos, valorTotalNotaRaw) {
   }
 }
 
-/**
- * Determina se a nota é Conta a Pagar ou Conta a Receber
- */
 function determineTipoConta(jsonResult) {
   const { fornecedor, cliente, naturezaOperacao } = jsonResult;
   
@@ -90,24 +80,20 @@ function determineTipoConta(jsonResult) {
   console.log('Cliente:', cliente?.nome, 'Tipo:', cliente?.tipo);
   console.log('Natureza Operação:', naturezaOperacao);
 
-  // REGRA 1: Se o cliente é Pessoa Física (CPF) → Conta a Pagar
   if (cliente && cliente.tipo === 'PF') {
     console.log('✅ Tipo: APAGAR (Cliente é Pessoa Física)');
     return 'APAGAR';
   }
 
-  // REGRA 2: Analisar a natureza da operação
   if (naturezaOperacao && naturezaOperacao !== 'N/A') {
     const natureza = naturezaOperacao.toLowerCase();
     
-    // Operações que geralmente são contas a pagar
     const indicadoresAPagar = [
       'compra', 'aquisição', 'aquisiçao', 'serviço', 'servico', 
       'despesa', 'conta', 'receb.de terceiros', 'receb de terceiros',
       'merc.aág.receb.de terceiros', 'merc aág receb de terceiros'
     ];
     
-    // Operações que geralmente são contas a receber
     const indicadoresAReceber = [
       'venda', 'prestação', 'prestacao', 'receita', 'faturamento',
       'comercialização', 'comercializacao', 'revenda'
@@ -128,23 +114,17 @@ function determineTipoConta(jsonResult) {
     }
   }
 
-  // REGRA 3: Se ambos são PJ, analisar contexto
   if (fornecedor && cliente && fornecedor.tipo === 'PJ' && cliente.tipo === 'PJ') {
-    // Se não conseguiu determinar pela natureza, assume Conta a Pagar (mais comum)
     console.log('✅ Tipo: APAGAR (Padrão para PJ-PJ)');
     return 'APAGAR';
   }
 
-  // REGRA 4: Padrão final - Conta a Pagar
   console.log('✅ Tipo: APAGAR (Padrão)');
   return 'APAGAR';
 }
 
-/**
- * Aplica ajustes automáticos básicos ao resultado do Gemini
- */
 function applyBasicAdjustments(jsonResult) {
-  // Ajustar cliente
+  
   if (jsonResult.cliente) {
     if (jsonResult.cliente.cpf && jsonResult.cliente.cpf !== 'N/A' && jsonResult.cliente.cpf !== '') {
       jsonResult.cliente.tipo = 'PF';
@@ -157,25 +137,20 @@ function applyBasicAdjustments(jsonResult) {
     }
   }
 
-  // Ajustar fornecedor
   if (jsonResult.fornecedor) {
     jsonResult.fornecedor.tipo = 'PJ';
   }
 
-  // Ajustar valor do frete
   if (jsonResult.valorFrete === undefined || jsonResult.valorFrete === null) {
     jsonResult.valorFrete = 0;
   }
 
-  // Garantir que naturezaOperacao existe
   if (!jsonResult.naturezaOperacao) {
     jsonResult.naturezaOperacao = 'N/A';
   }
 
-  // 🔍 DETERMINAR TIPO DE CONTA (NOVA FUNCIONALIDADE)
   jsonResult.tipoConta = determineTipoConta(jsonResult);
 
-  // Filtrar categorias válidas
   if (jsonResult.classificacaoDespesa && Array.isArray(jsonResult.classificacaoDespesa)) {
     const categoriasValidas = [
       'INSUMOS_AGRICOLAS', 'MANUTENCAO_OPERACAO', 'RECURSOS_HUMANOS',
@@ -461,7 +436,6 @@ IMPORTANTE: As notas fiscais reais seguem exatamente o formato dos exemplos forn
     
     console.log('Resposta recebida do Gemini:', text.substring(0, 200) + '...');
 
-    // Extrair JSON da resposta
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Resposta do Gemini não contém JSON válido');
@@ -470,10 +444,8 @@ IMPORTANTE: As notas fiscais reais seguem exatamente o formato dos exemplos forn
     const jsonResult = JSON.parse(jsonMatch[0]);
     console.log('✅ JSON parseado com sucesso');
 
-    // Aplicar ajustes automáticos
     const adjustedResult = applyBasicAdjustments(jsonResult);
 
-    // Validar produtos (apenas verificação, sem correção)
     validateProducts(adjustedResult.produtos, adjustedResult.valorTotal);
 
     console.log('🎯 Tipo de Conta Definido:', adjustedResult.tipoConta);
