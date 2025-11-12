@@ -1,39 +1,214 @@
+/* Agente3.css */
 .agente3-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    font-family: Arial, sans-serif;
 }
 
+/* Seletor de RAG */
+.rag-selector {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.rag-selector h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.rag-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.rag-button {
+    padding: 12px 20px;
+    border: 2px solid #007bff;
+    background-color: white;
+    color: #007bff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    flex: 1;
+    min-width: 180px;
+}
+
+.rag-button:hover {
+    background-color: #e6f2ff;
+    transform: translateY(-2px);
+}
+
+.rag-button.active {
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.rag-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.rag-indicator {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 8px;
+    padding: 8px 0;
+}
+
+.rag-description {
+    font-size: 13px;
+    color: #6c757d;
+    font-style: italic;
+    padding: 8px 12px;
+    background-color: #e9ecef;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+}
+
+/* Área de entrada */
 .agente3-input {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-direction: column;
 }
 
 .agente3-input textarea {
     flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
+    padding: 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.3s ease;
+}
+
+.agente3-input textarea:focus {
+    outline: none;
+    border-color: #007bff;
 }
 
 .agente3-input button {
-    padding: 10px 20px;
-    background: #007bff;
+    padding: 12px 30px;
+    background-color: #28a745;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+}
+
+.agente3-input button:hover:not(:disabled) {
+    background-color: #218838;
+    transform: translateY(-2px);
 }
 
 .agente3-input button:disabled {
-    background: #ccc;
+    background-color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Estados de carregamento e resposta */
+.carregando {
+    text-align: center;
+    padding: 15px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    color: #856404;
+    margin: 20px 0;
 }
 
 .agente3-resposta {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 5px;
-    border-left: 4px solid #007bff;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border-left: 5px solid #007bff;
+}
+
+.resposta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.resposta-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.rag-badge {
+    padding: 4px 12px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.agente3-resposta p {
+    margin-bottom: 0;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: #495057;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .agente3-container {
+        padding: 15px;
+    }
+    
+    .rag-buttons {
+        flex-direction: column;
+    }
+    
+    .rag-button {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .resposta-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .agente3-input button {
+        width: 100%;
+        align-self: stretch;
+    }
+}
+
+@media (max-width: 480px) {
+    .rag-selector {
+        padding: 15px;
+    }
+    
+    .agente3-input textarea {
+        padding: 12px;
+    }
+    
+    .agente3-resposta {
+        padding: 15px;
+    }
 }
