@@ -1,5 +1,6 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { Pool } = require('pg');
+const EmbeddingSearch = require('../utils/EmbeddingSearch'); // 🔹 novo
 
 class Agente3Controller {
     constructor() {
@@ -11,24 +12,34 @@ class Agente3Controller {
             password: process.env.DB_PASSWORD,
             port: process.env.DB_PORT,
         });
+
+        // 🔹 Carregar base de embeddings na inicialização
+        EmbeddingSearch.carregarBase();
     }
 
     async fazerPergunta(pergunta) {
         try {
             console.log('🤖 Agente3 - Processando pergunta:', pergunta);
 
-            // Buscar dados do banco
-            const dados = await this.buscarDados(pergunta);
-            
-            // Gerar resposta com Gemini
+            let dados = [];
+
+            // 🔹 1. Tenta buscar no banco (RAG simples)
+            try {
+                dados = await this.buscarDados(pergunta);
+            } catch (err) {
+                console.log('⚠️ Erro ao buscar dados SQL:', err.message);
+            }
+
+            // 🔹 2. Se o SQL não retornar nada, tenta via embeddings
+            if (!dados || dados.length === 0) {
+                console.log('📘 Nenhum dado encontrado no banco, buscando via embeddings...');
+                dados = await EmbeddingSearch.buscar(pergunta);
+            }
+
+            // 🔹 3. Gera a resposta normalmente com Gemini
             const resposta = await this.gerarResposta(pergunta, dados);
 
-            return {
-                success: true,
-                pergunta,
-                dados: dados,
-                resposta
-            };
+            return { success: true, pergunta, dados, resposta };
 
         } catch (error) {
             console.error('❌ Erro no Agente3:', error);
@@ -90,12 +101,12 @@ class Agente3Controller {
         const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
-Baseado nestes dados financeiros, responda: "${pergunta}"
+Baseado nestes dados (banco ou embeddings), responda: "${pergunta}"
 
 DADOS:
 ${JSON.stringify(dados, null, 2)}
 
-Responda em português de forma direta:`;
+Responda em português de forma direta e objetiva:`;
 
         const result = await model.generateContent(prompt);
         return result.response.text();
