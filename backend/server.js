@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
-const { Client } = require('pg');
 require('dotenv').config();
 
 const invoiceRoutes = require('./routes/invoiceRoutes');
-
+const pessoasRoutes = require('./routes/pessoasRoutes');
+const classificacaoRoutes = require('./routes/classificacaoRoutes');
+const agente3Controller = require('./controllers/agente3Controller');
+const contasRoutes = require('./routes/contasRoutes');
 const { checkAndCreateTables } = require('./database/tableManager');
 
 const app = express();
@@ -16,58 +16,33 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('uploads'));
 
-// ==================================================
-// AGENTE3 - ROTAS SIMPLIFICADAS
-// ==================================================
-
-const agente3Controller = require('./controllers/agente3Controller');
-
-// Rota principal para perguntas
+// ========================
+// Agente3
+// ========================
 app.post('/api/agente3/perguntar', async (req, res) => {
-    try {
-        const { pergunta } = req.body;
-
-        if (!pergunta) {
-            return res.status(400).json({ 
-                success: false,
-                error: 'Pergunta é obrigatória' 
-            });
-        }
-
-        console.log('🤖 Agente3 - Nova pergunta:', pergunta);
-
-        const resultado = await agente3Controller.fazerPergunta(pergunta);
-        
-        res.json(resultado);
-
-    } catch (error) {
-        console.error('❌ Erro no Agente3:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    const { pergunta } = req.body;
+    if (!pergunta) return res.status(400).json({ success: false, error: 'Pergunta é obrigatória' });
+    const resultado = await agente3Controller.fazerPergunta(pergunta);
+    res.json({ success: true, ...resultado });
+  } catch (error) {
+    console.error('❌ Erro no Agente3:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
-// Health check do Agente3
 app.get('/api/agente3/health', async (req, res) => {
-    try {
-        const health = await agente3Controller.healthCheck();
-        res.json(health);
-    } catch (error) {
-        res.status(500).json({
-            status: 'error',
-            error: error.message
-        });
-    }
+  try {
+    const health = await agente3Controller.healthCheck();
+    res.json(health);
+  } catch (error) {
+    res.status(500).json({ status: 'error', error: error.message });
+  }
 });
 
-console.log('✅ Agente3 - Rotas carregadas');
-
-// ==================================================
-// ROTAS EXISTENTES DO SEU SISTEMA
-// ==================================================
-
+// ========================
+// Health & Root
+// ========================
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'healthy',
@@ -84,12 +59,21 @@ app.get('/', (req, res) => {
     endpoints: {
       health: 'GET /health',
       upload: 'POST /api/invoices/process',
-      agente3: 'POST /api/agente3/perguntar'
+      agente3: 'POST /api/agente3/perguntar',
+      pessoas: 'CRUD /api/pessoas',
+      classificacao: 'CRUD /api/classificacao'
     }
   });
 });
 
+// ========================
+// Routes
+// ========================
+
 app.use('/api/invoices', invoiceRoutes);
+app.use('/api/pessoas', pessoasRoutes);
+app.use('/api/classificacao', classificacaoRoutes);
+app.use('/api/contas', contasRoutes);
 
 console.log('🔧 === CONFIGURAÇÕES ===');
 console.log('DB_HOST:', process.env.DB_HOST);
@@ -100,11 +84,8 @@ console.log('PORT:', PORT);
 async function startServer() {
   try {
     console.log('🔧 Verificando e criando tabelas...');
-    
     await checkAndCreateTables();
-    
     console.log('✅ Tabelas verificadas/criadas com sucesso');
-    
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
       console.log(`🌐 Health check: http://localhost:${PORT}/health`);
