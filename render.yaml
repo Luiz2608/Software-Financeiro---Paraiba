@@ -49,4 +49,4 @@ services:
     staticPublishPath: build
     envVars:
       - key: REACT_APP_API_BASE
-        value: https://pdf-processor-backend.onrender.com/api
+        value: https://software-financeiro-paraiba.onrender.com
