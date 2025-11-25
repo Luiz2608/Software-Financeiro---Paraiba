@@ -1,6 +1,12 @@
 const { Client } = require('pg');
 
 function getClient() {
+  if (process.env.DATABASE_URL) {
+    return new Client({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    });
+  }
   const isDocker = process.env.RUNNING_IN_DOCKER === 'true';
   const host = isDocker ? 'postgres' : (process.env.DB_HOST || '127.0.0.1');
   return new Client({
@@ -9,6 +15,7 @@ function getClient() {
     database: process.env.DB_NAME || 'contas_app',
     password: process.env.DB_PASSWORD || 'postgres',
     port: process.env.DB_PORT || 5432,
+    ssl: (process.env.DB_SSL === 'true' || process.env.RENDER === 'true') ? { rejectUnauthorized: false } : undefined,
   });
 }
 
