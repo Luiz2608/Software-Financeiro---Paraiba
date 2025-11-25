@@ -6,13 +6,15 @@ const Agente3 = () => {
     const [pergunta, setPergunta] = useState('');
     const [resposta, setResposta] = useState('');
     const [carregando, setCarregando] = useState(false);
-    const [ragTipo, setRagTipo] = useState('simples'); // 'simples' ou 'embeddings'
+    const [ragTipo, setRagTipo] = useState('simples');
+    const [apiKey, setApiKey] = useState('');
 
     const fazerPergunta = async () => {
         if (!pergunta.trim()) return;
 
         setCarregando(true);
         try {
+            window.__GEMINI_API_KEY__ = apiKey || '';
             const response = await agente3Consulta(pergunta, ragTipo);
             if (response.success) {
                 setResposta(response.resposta);
@@ -69,6 +71,13 @@ const Agente3 = () => {
             </div>
 
             <div className="agente3-input">
+                <input
+                    type="password"
+                    placeholder="Informe sua Gemini API Key"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    style={{ marginBottom: 8 }}
+                />
                 <textarea
                     value={pergunta}
                     onChange={(e) => setPergunta(e.target.value)}

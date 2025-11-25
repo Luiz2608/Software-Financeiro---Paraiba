@@ -142,7 +142,11 @@ export const deleteClassificacao = async (id) => {
 
 // Agente3
 export const agente3Consulta = async (pergunta, tipo = 'simples') => {
-  const response = await api.post('/agente3/perguntar', { pergunta, tipo });
+  const response = await api.post('/agente3/perguntar', { pergunta, tipo }, {
+    headers: {
+      'X-API-Key': window.__GEMINI_API_KEY__ || ''
+    }
+  });
   return response.data;
 };
 

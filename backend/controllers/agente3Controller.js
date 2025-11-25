@@ -2,14 +2,16 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { Pool } = require('pg');
 const EmbeddingSearch = require('../utils/EmbeddingSearch');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const pool = new Pool({
-    user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    database: process.env.DB_NAME || 'contas_app',
-    password: process.env.DB_PASSWORD || 'postgres',
-    port: process.env.DB_PORT || 5432,
-});
+const pool = process.env.DATABASE_URL
+  ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } })
+  : new Pool({
+      user: process.env.DB_USER || 'postgres',
+      host: process.env.DB_HOST || 'localhost',
+      database: process.env.DB_NAME || 'contas_app',
+      password: process.env.DB_PASSWORD || 'postgres',
+      port: process.env.DB_PORT || 5432,
+      ssl: (process.env.DB_SSL === 'true' || process.env.RENDER === 'true') ? { rejectUnauthorized: false } : undefined,
+    });
 
 // Carrega embeddings, se existir
 EmbeddingSearch.carregarBase();
@@ -63,16 +65,21 @@ async function buscarDados(pergunta) {
     return result.rows;
 }
 
-async function gerarResposta(pergunta, dados) {
+async function gerarResposta(pergunta, dados, apiKey) {
     try {
+        if (!apiKey || String(apiKey).trim().length === 0) {
+            const resumo = Array.isArray(dados)
+                ? `Dados relevantes (${dados.length} itens). Ex.: ${JSON.stringify(dados[0] || {}, null, 0)}`
+                : `Dados: ${JSON.stringify(dados || {}, null, 0)}`;
+            return `Baseado nos dados, ${resumo}`;
+        }
+        const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const prompt = `Baseado nestes dados, responda objetivamente em português: "${pergunta}"\n\nDADOS:\n${JSON.stringify(dados, null, 2)}`;
         const result = await model.generateContent(prompt);
         return result.response.text();
     } catch (error) {
-        // Fallback quando atingir cota/429 ou outra falha
         console.warn('⚠️ Falha ao gerar resposta com Gemini, usando fallback:', error?.message);
-        // Resumo simples a partir dos dados
         const resumo = Array.isArray(dados)
             ? `Dados relevantes (${dados.length} itens). Ex.: ${JSON.stringify(dados[0] || {}, null, 0)}`
             : `Dados: ${JSON.stringify(dados || {}, null, 0)}`;
@@ -80,15 +87,15 @@ async function gerarResposta(pergunta, dados) {
     }
 }
 
-async function ragSimples(pergunta) {
+async function ragSimples(pergunta, apiKey) {
     const dados = await buscarDados(pergunta);
-    const resposta = await gerarResposta(pergunta, dados);
+    const resposta = await gerarResposta(pergunta, dados, apiKey);
     return { pergunta, dados, resposta };
 }
 
-async function ragEmbeddings(pergunta) {
+async function ragEmbeddings(pergunta, apiKey) {
     const docs = await EmbeddingSearch.buscar(pergunta);
-    const resposta = await gerarResposta(pergunta, docs);
+    const resposta = await gerarResposta(pergunta, docs, apiKey);
     return { pergunta, dados: docs, resposta };
 }
 
@@ -111,8 +118,9 @@ module.exports = {
     ragSimples,
     ragEmbeddings,
     indexarDados,
-    async fazerPergunta(pergunta) {
-        return await ragSimples(pergunta);
+    async fazerPergunta(pergunta, apiKey, tipo = 'simples') {
+        if (tipo === 'embeddings') return await ragEmbeddings(pergunta, apiKey);
+        return await ragSimples(pergunta, apiKey);
     },
     async healthCheck() {
         try {

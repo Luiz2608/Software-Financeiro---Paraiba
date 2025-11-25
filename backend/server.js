@@ -21,9 +21,10 @@ app.use(express.static('uploads'));
 // ========================
 app.post('/api/agente3/perguntar', async (req, res) => {
   try {
-    const { pergunta } = req.body;
+    const { pergunta, tipo } = req.body;
     if (!pergunta) return res.status(400).json({ success: false, error: 'Pergunta é obrigatória' });
-    const resultado = await agente3Controller.fazerPergunta(pergunta);
+    const apiKey = req.headers['x-api-key'] || req.headers['X-API-Key'];
+    const resultado = await agente3Controller.fazerPergunta(pergunta, apiKey, tipo);
     res.json({ success: true, ...resultado });
   } catch (error) {
     console.error('❌ Erro no Agente3:', error);
