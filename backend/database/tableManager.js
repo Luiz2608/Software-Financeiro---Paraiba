@@ -13,13 +13,14 @@ function resolveHost() {
 
 async function checkAndCreateTables() {
   const client = process.env.DATABASE_URL
-    ? new Client({ connectionString: process.env.DATABASE_URL })
+    ? new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } })
     : new Client({
         user: process.env.DB_USER || 'postgres',
         host: resolveHost(),
         database: process.env.DB_NAME || 'contas_app',
         password: process.env.DB_PASSWORD || 'postgres',
         port: process.env.DB_PORT || 5432,
+        ssl: (process.env.DB_SSL === 'true' || process.env.RENDER === 'true') ? { rejectUnauthorized: false } : undefined,
       });
 
   try {

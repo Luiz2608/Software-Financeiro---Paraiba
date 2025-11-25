@@ -4,19 +4,28 @@ class DatabaseService {
   constructor() {
     const isDocker = process.env.RUNNING_IN_DOCKER === 'true';
     console.log('Ambiente Docker:', isDocker ? 'Sim' : 'Não');
-    
-    const envHost = process.env.DB_HOST || '127.0.0.1';
-    const pgHost = isDocker ? 'postgres' : (envHost === 'postgres' ? '127.0.0.1' : envHost);
-    console.log('Conectando ao PostgreSQL em:', pgHost);
-    
-    this.client = new Client({
-      user: process.env.DB_USER || 'postgres',
-      host: pgHost,
-      database: process.env.DB_NAME || 'contas_app',
-      password: process.env.DB_PASSWORD || 'postgres',
-      port: process.env.DB_PORT || 5432,
-    });
-    
+
+    if (process.env.DATABASE_URL) {
+      console.log('Conectando via DATABASE_URL');
+      this.client = new Client({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      });
+    } else {
+      const envHost = process.env.DB_HOST || '127.0.0.1';
+      const pgHost = isDocker ? 'postgres' : (envHost === 'postgres' ? '127.0.0.1' : envHost);
+      console.log('Conectando ao PostgreSQL em:', pgHost);
+
+      this.client = new Client({
+        user: process.env.DB_USER || 'postgres',
+        host: pgHost,
+        database: process.env.DB_NAME || 'contas_app',
+        password: process.env.DB_PASSWORD || 'postgres',
+        port: process.env.DB_PORT || 5432,
+        ssl: (process.env.DB_SSL === 'true' || process.env.RENDER === 'true') ? { rejectUnauthorized: false } : undefined,
+      });
+    }
+
     this.connect();
   }
 

@@ -7,13 +7,17 @@ function resolveHost() {
 }
 
 const pool = process.env.DATABASE_URL
-  ? new Pool({ connectionString: process.env.DATABASE_URL })
+  ? new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    })
   : new Pool({
       host: resolveHost(),
       port: process.env.DB_PORT || 5432,
       user: process.env.DB_USER || process.env.POSTGRES_USER || 'postgres',
       password: process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD || 'postgres',
       database: process.env.DB_DATABASE || process.env.DB_NAME || process.env.POSTGRES_DB || 'contas_app',
+      ssl: (process.env.DB_SSL === 'true' || process.env.RENDER === 'true') ? { rejectUnauthorized: false } : undefined,
     });
 
 function mapTipoFilter(tipoUi) {
