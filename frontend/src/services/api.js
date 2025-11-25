@@ -50,13 +50,14 @@ api.interceptors.response.use(
   }
 );
 
-export const processInvoice = async (file) => {
+export const processInvoice = async (file, apiKey) => {
   const formData = new FormData();
   formData.append('pdfFile', file);
   
   const response = await api.post('/invoices/process', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
+      'X-API-Key': apiKey || ''
     },
     timeout: 60000,
   });

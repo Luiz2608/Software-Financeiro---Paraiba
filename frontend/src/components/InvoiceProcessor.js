@@ -11,6 +11,7 @@ const InvoiceProcessor = () => {
   const [error, setError] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [activeTab, setActiveTab] = useState('upload'); // ← ADICIONAR ESTE STATE
+  const [apiKey, setApiKey] = useState('');
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -21,6 +22,10 @@ const InvoiceProcessor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    if (!apiKey || apiKey.trim().length === 0) {
+      setError('Por favor, informe a API Key');
+      return;
+    }
     if (!file) {
       setError('Por favor, selecione um arquivo PDF');
       return;
@@ -31,7 +36,7 @@ const InvoiceProcessor = () => {
     
     try {
       console.log('🔄 Enviando arquivo para processamento...');
-      const response = await processInvoice(file);
+      const response = await processInvoice(file, apiKey);
       
       console.log('✅ RESPOSTA DO BACKEND:', response);
 
@@ -569,6 +574,16 @@ const InvoiceProcessor = () => {
         </div>
         
         <form onSubmit={handleSubmit} className="upload-form">
+          <div className="file-input-container">
+            <input
+              type="text"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Informe sua Gemini API Key"
+              className="text-input"
+              id="apiKey"
+            />
+          </div>
           <div className="file-input-container">
             <input
               type="file"

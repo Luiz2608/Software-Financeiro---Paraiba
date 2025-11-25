@@ -1,0 +1,15 @@
+.filters { display: flex; gap: 8px; align-items: center; }
+.input { flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; }
+.select { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; }
+.btn { border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+.btn-primary { background: #2b5cb8; color: #fff; }
+.btn-success { background: #10b981; color: #fff; }
+.btn-danger { background: #c0392b; color: #fff; }
+.table-wrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 10px 12px; border-bottom: 1px solid #f0f2f5; text-align: left; }
+.table th { cursor: pointer; color: #2b5cb8; background: #fafafa; }
+.sort { font-size: 0.85em; color: #333; margin-left: 4px; }
+.empty { text-align: center; color: #666; padding: 16px; }
+.actions { display: flex; gap: 8px; }
+.footer-actions { margin-top: 12px; }

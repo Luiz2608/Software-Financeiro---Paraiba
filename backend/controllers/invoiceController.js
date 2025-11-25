@@ -21,9 +21,11 @@ const processInvoice = async (req, res) => {
     
     console.log('📄 Texto extraído do PDF:', pdfText.substring(0, 500) + '...');
     
+    const apiKey = req.headers['x-api-key'] || '';
     const resultado = await agenteService.analisarEProcessarNota(
-      pdfText, 
-      req.file.originalname
+      pdfText,
+      req.file.originalname,
+      apiKey
     );
     
     if (resultado.sucesso) {

@@ -1,14 +1,26 @@
 require('dotenv').config();
 const { Client } = require('pg');
 
+function resolveHost() {
+  const envHost = process.env.DB_HOST || 'localhost';
+  // Fallback para ambiente local quando DB_HOST=postgres não resolve
+  if (envHost === 'postgres') {
+    const isDocker = process.env.DOCKER === 'true' || process.env.CONTAINER === 'true';
+    if (!isDocker) return 'localhost';
+  }
+  return envHost;
+}
+
 async function checkAndCreateTables() {
-  const client = new Client({
-    user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'postgres',
-    database: process.env.DB_NAME || 'contas_app',
-    password: process.env.DB_PASSWORD || 'postgres',
-    port: process.env.DB_PORT || 5432,
-  });
+  const client = process.env.DATABASE_URL
+    ? new Client({ connectionString: process.env.DATABASE_URL })
+    : new Client({
+        user: process.env.DB_USER || 'postgres',
+        host: resolveHost(),
+        database: process.env.DB_NAME || 'contas_app',
+        password: process.env.DB_PASSWORD || 'postgres',
+        port: process.env.DB_PORT || 5432,
+      });
 
   try {
     await client.connect();
@@ -181,7 +193,9 @@ async function checkAndFixColumns(client) {
   await renameColumnIfExists(client, 'PARCELACONTAS', 'STATUS', 'SITUACAO');
   
   await addColumnIfNotExists(client, 'MOVIMENTOCONTAS', 'NUMERO_NOTA_FISCAL', 'VARCHAR(50)');
+  await addColumnIfNotExists(client, 'MOVIMENTOCONTAS', 'ATIVO', 'BOOLEAN DEFAULT TRUE');
   
+  await addColumnIfNotExists(client, 'PARCELACONTAS', 'ATIVO', 'BOOLEAN DEFAULT TRUE');
   await addColumnIfNotExists(client, 'MOVIMENTO_CLASSIFICACAO', 'DATA_CADASTRO', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
 }
 

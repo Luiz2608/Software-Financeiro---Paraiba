@@ -1,0 +1,52 @@
+databases:
+  - name: contas-db
+    databaseName: contas_app
+    user: contas_user
+
+services:
+  - type: web
+    name: pdf-processor-backend
+    env: node
+    rootDir: backend
+    plan: free
+    autoDeploy: true
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: contas-db
+          property: connectionString
+      - key: DB_HOST
+        fromDatabase:
+          name: contas-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: contas-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: contas-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: contas-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: contas-db
+          property: password
+
+  - type: web
+    name: pdf-processor-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_BASE
+        value: https://pdf-processor-backend.onrender.com/api

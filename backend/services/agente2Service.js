@@ -1,4 +1,4 @@
-﻿
+
 const databaseService = require('./databaseService');
 const { analyzeWithGemini } = require('./geminiService');
 
@@ -152,11 +152,11 @@ class AgenteService {
     }
   }
 
-  async analisarEProcessarNota(pdfText, nomeArquivo) {
+  async analisarEProcessarNota(pdfText, nomeArquivo, apiKey) {
     try {
       this.adicionarMensagem("🤖 Gemini AI analisando nota fiscal...");
       
-      const resultadoGemini = await analyzeWithGemini(pdfText);
+      const resultadoGemini = await analyzeWithGemini(pdfText, apiKey);
       
       this.adicionarMensagem("📊 Análise do Gemini concluída");
       this.adicionarMensagem(`• Fornecedor: ${resultadoGemini.fornecedor?.razaoSocial}`);

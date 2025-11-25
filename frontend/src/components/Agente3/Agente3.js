@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { agente3Consulta } from '../../services/api';
 import './Agente3.css';
 
 const Agente3 = () => {
@@ -13,15 +13,11 @@ const Agente3 = () => {
 
         setCarregando(true);
         try {
-            const response = await axios.post('http://localhost:3000/api/agente3/perguntar', {
-                pergunta: pergunta,
-                ragTipo: ragTipo // Envia o tipo de RAG selecionado
-            });
-
-            if (response.data.success) {
-                setResposta(response.data.resposta);
+            const response = await agente3Consulta(pergunta, ragTipo);
+            if (response.success) {
+                setResposta(response.resposta);
             } else {
-                setResposta(`Erro: ${response.data.error}`);
+                setResposta(`Erro: ${response.error}`);
             }
 
         } catch (error) {

@@ -5,7 +5,8 @@ class DatabaseService {
     const isDocker = process.env.RUNNING_IN_DOCKER === 'true';
     console.log('Ambiente Docker:', isDocker ? 'Sim' : 'Não');
     
-    const pgHost = isDocker ? 'postgres' : (process.env.DB_HOST || '127.0.0.1');
+    const envHost = process.env.DB_HOST || '127.0.0.1';
+    const pgHost = isDocker ? 'postgres' : (envHost === 'postgres' ? '127.0.0.1' : envHost);
     console.log('Conectando ao PostgreSQL em:', pgHost);
     
     this.client = new Client({

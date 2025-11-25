@@ -1,10 +1,4 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY || GEMINI_API_KEY.trim().length === 0) {
-  throw new Error('GEMINI_API_KEY ausente. Defina no .env e no docker-compose.');
-}
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 
@@ -165,8 +159,48 @@ function applyBasicAdjustments(jsonResult) {
   return jsonResult;
 }
 
-const analyzeWithGemini = async (pdfText) => {
+function extractFallbackFromText(pdfText) {
+  const text = (pdfText || '').replace(/\r\n|\r/g, '\n');
+  // CNPJ
+  const cnpjMatch = text.match(/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/) || text.match(/\b\d{14}\b/);
+  const cnpj = cnpjMatch ? cnpjMatch[0] : 'N/A';
+  // Número da Nota
+  const notaMatch = text.match(/(nota\s*fiscal|nfe|n\.\s*\d+|número\s*da\s*nota)\s*[:#-]?\s*(\d{4,})/i);
+  const numeroNotaFiscal = notaMatch ? (notaMatch[2] || notaMatch[0].match(/\d+/)?.[0]) : 'N/A';
+  // Valor Total
+  const valorMatch = text.match(/(valor\s*total|total\s*da\s*nota|total)\s*[:\-]?\s*R?\$?\s*([\d\.,]+)/i);
+  const valorTotal = valorMatch ? normalizeNumber(valorMatch[2]) : null;
+  // Data de Emissão
+  const dataMatch = text.match(/(emiss[aã]o|data)\s*[:\-]?\s*(\d{2}\/\d{2}\/\d{4})/i);
+  const dataEmissao = dataMatch ? dataMatch[2] : new Date().toISOString().split('T')[0];
+  // Natureza da Operação
+  const naturezaMatch = text.match(/natureza\s*da\s*opera[cç][aã]o\s*[:\-]?\s*(.+)/i);
+  const naturezaOperacao = naturezaMatch ? naturezaMatch[1].split('\n')[0].trim() : 'N/A';
+
+  const result = {
+    fornecedor: { razaoSocial: 'N/A', cnpj },
+    cliente: { nome: 'N/A', documento: 'N/A', tipo: 'PF' },
+    numeroNotaFiscal,
+    dataEmissao,
+    naturezaOperacao,
+    produtos: [],
+    valorTotal: valorTotal ?? 0,
+    parcelas: [],
+  };
+
+  // Ajustes básicos e determinação do tipo
+  const adjusted = applyBasicAdjustments(result);
+  adjusted.tipoConta = determineTipoConta(adjusted);
+  return adjusted;
+}
+
+const analyzeWithGemini = async (pdfText, apiKey) => {
   try {
+    if (!apiKey || String(apiKey).trim().length === 0) {
+      const fallback = extractFallbackFromText(pdfText);
+      return fallback;
+    }
+    const genAI = new GoogleGenerativeAI(apiKey);
     console.log('Iniciando análise com Gemini...');
     
     const model = genAI.getGenerativeModel({ 
@@ -455,6 +489,13 @@ IMPORTANTE: As notas fiscais reais seguem exatamente o formato dos exemplos forn
 
   } catch (error) {
     console.error('❌ Erro no Gemini:', error);
+    const msg = String(error?.message || '').toLowerCase();
+    const isRateLimit = msg.includes('429') || msg.includes('too many requests') || msg.includes('exceeded your current quota');
+    if (isRateLimit) {
+      console.warn('⚠️ Cota do Gemini excedida. Usando extração básica por regex como fallback.');
+      const fallback = extractFallbackFromText(pdfText);
+      return fallback;
+    }
     throw new Error(`Erro ao analisar com Gemini: ${error.message}`);
   }
 };

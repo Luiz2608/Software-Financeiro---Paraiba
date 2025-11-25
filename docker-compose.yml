@@ -28,7 +28,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/contas_app
@@ -38,13 +39,20 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       PORT: "3000"
-      GEMINI_API_KEY: "AIzaSyBRYLy_VJDVQFdx9AFXz-gDstu_ie-qOKQ"
+      RUNNING_IN_DOCKER: "true"
+      DOCKER: "true"
       GEMINI_MODEL: "gemini-2.5-flash"
     volumes:
       - ./backend/uploads:/app/uploads
     networks:
       - app-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     
     command: >
       sh -c "
@@ -66,6 +74,12 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/ | grep -q '<!DOCTYPE html>' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   postgres_data:
