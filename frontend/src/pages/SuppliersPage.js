@@ -9,10 +9,11 @@ export default function SuppliersPage() {
   const [editFields, setEditFields] = useState({ razaoSocial: '', nomeFantasia: '', cnpjCpf: '' });
   const [sort, setSort] = useState('razao_social');
   const [order, setOrder] = useState('asc');
+  const [status, setStatus] = useState('ATIVO');
 
   const buscar = async () => {
     try {
-      const data = await listPessoas({ q, tipo: 'FORNECEDOR', status: 'ATIVO', sort, order });
+      const data = await listPessoas({ q, tipo: 'FORNECEDOR', status, sort, order });
       setRows(data.data || []);
     } catch (err) {
       console.error('Erro ao listar fornecedores:', err);
@@ -44,12 +45,24 @@ export default function SuppliersPage() {
     catch (err) { console.error(err); alert('Erro ao inativar'); }
   };
 
+  const toggleSort = (col) => {
+    const nextOrder = sort === col && order === 'asc' ? 'desc' : 'asc';
+    setSort(col);
+    setOrder(nextOrder);
+    setTimeout(() => buscar(), 0);
+  };
+
   return (
     <div>
       <div className="card">
         <h2>Fornecedores</h2>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <input className="input" placeholder="Buscar" value={q} onChange={(e)=>setQ(e.target.value)} />
+          <select className="select" value={status} onChange={(e)=>setStatus(e.target.value)}>
+            <option value="ATIVO">Ativo</option>
+            <option value="INATIVO">Inativo</option>
+            <option value="TODOS">Todos</option>
+          </select>
           <button className="btn btn-primary" onClick={buscar}>🔎 Buscar</button>
         </div>
       </div>
@@ -116,9 +129,3 @@ export default function SuppliersPage() {
     </div>
   );
 }
-  const toggleSort = (col) => {
-    const nextOrder = sort === col && order === 'asc' ? 'desc' : 'asc';
-    setSort(col);
-    setOrder(nextOrder);
-    setTimeout(() => buscar(), 0);
-  };
