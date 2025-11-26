@@ -17,7 +17,7 @@ class EmbeddingSearch {
     setApiKey(apiKey) {
         if (!apiKey) return;
         this.genAI = new GoogleGenerativeAI(apiKey);
-        this.model = this.genAI.getGenerativeModel({ model: "embedding-001" });
+        this.model = this.genAI.getGenerativeModel({ model: "text-embedding-004" });
     }
 
     async carregarBase() {
@@ -37,8 +37,12 @@ class EmbeddingSearch {
             if (key) this.setApiKey(key);
         }
         if (!this.model) throw new Error('Modelo de embeddings não inicializado');
-        const result = await this.model.embedContent(texto);
-        return result.embedding.values;
+        try {
+            const result = await this.model.embedContent(texto);
+            return result.embedding.values;
+        } catch (e) {
+            throw new Error('Falha ao gerar embedding: ' + (e?.message || 'erro'));
+        }
     }
 
     async gerarBase(docs) {

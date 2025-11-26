@@ -95,7 +95,13 @@ async function ragSimples(pergunta, apiKey) {
 
 async function ragEmbeddings(pergunta, apiKey) {
     if (apiKey) EmbeddingSearch.setApiKey(apiKey);
-    let docs = await EmbeddingSearch.buscar(pergunta);
+    let docs = [];
+    try {
+      docs = await EmbeddingSearch.buscar(pergunta);
+    } catch (e) {
+      console.warn('⚠️ Busca vetorial falhou, usando fallback:', e?.message);
+      docs = [];
+    }
     if (!docs || docs.length === 0) {
         try {
             await indexarDados(apiKey);
@@ -103,6 +109,11 @@ async function ragEmbeddings(pergunta, apiKey) {
         } catch (e) {
             console.warn('⚠️ Falha ao indexar dados para embeddings:', e?.message);
         }
+    }
+    if (!docs || docs.length === 0) {
+      const dadosSimples = await buscarDados(pergunta);
+      const resposta = await gerarResposta(pergunta, dadosSimples, apiKey);
+      return { pergunta, dados: dadosSimples, resposta };
     }
     const resposta = await gerarResposta(pergunta, docs, apiKey);
     return { pergunta, dados: docs, resposta };
@@ -120,8 +131,13 @@ async function indexarDados(apiKey) {
     `;
     const { rows } = await pool.query(sql);
     const docs = rows.map(r => `Movimento ${r.id} | ${r.tipo} | Nota ${r.numero_nota_fiscal || 'N/A'} | Pessoa ${r.pessoa} | Valor ${r.valor_total} | Emissão ${r.data_emissao}`);
-    await EmbeddingSearch.gerarBase(docs);
-    return { indexed: docs.length };
+    const { rows: pessoas } = await pool.query(`SELECT id, tipo, razao_social, cnpj_cpf FROM pessoas ORDER BY data_cadastro DESC LIMIT 200`);
+    const pessoasDocs = pessoas.map(p => `Pessoa ${p.id} | ${p.tipo} | ${p.razao_social} | Doc ${p.cnpj_cpf || 'N/A'}`);
+    const { rows: classes } = await pool.query(`SELECT id, tipo, descricao FROM classificacao ORDER BY data_cadastro DESC LIMIT 200`);
+    const classesDocs = classes.map(c => `Classificacao ${c.id} | ${c.tipo} | ${c.descricao}`);
+    const allDocs = [...docs, ...pessoasDocs, ...classesDocs];
+    await EmbeddingSearch.gerarBase(allDocs);
+    return { indexed: allDocs.length };
 }
 
 module.exports = {
