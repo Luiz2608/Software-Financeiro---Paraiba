@@ -10,7 +10,7 @@ export default function ClientsPage() {
   const [sort, setSort] = useState('razao_social');
   const [order, setOrder] = useState('asc');
   const [status, setStatus] = useState('ATIVO');
-  const [tipo, setTipo] = useState('FATURADO');
+  const [tipo, setTipo] = useState('TODOS');
 
   const buscar = async () => {
     try {

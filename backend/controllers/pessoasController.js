@@ -56,7 +56,8 @@ exports.listar = async (req, res) => {
     const safeOrder = order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
 
     const query = `
-      SELECT id, tipo, razao_social, nome_fantasia, cnpj_cpf, ativo, data_cadastro
+      SELECT id, tipo, razao_social, nome_fantasia, cnpj_cpf, ativo, data_cadastro,
+             COALESCE(nome_fantasia, razao_social) AS nome
       FROM pessoas
       ${where}
       ORDER BY ${safeSort} ${safeOrder}
