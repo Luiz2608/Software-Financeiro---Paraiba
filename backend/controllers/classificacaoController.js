@@ -45,7 +45,7 @@ exports.listar = async (req, res) => {
     }
 
     const where = filtros.length ? `WHERE ${filtros.join(' AND ')}` : '';
-    const safeSort = ['descricao','nome','tipo','data_cadastro'].includes(sort.toLowerCase()) ? sort : 'descricao';
+    const safeSort = ['id','descricao','nome','tipo','data_cadastro'].includes(sort.toLowerCase()) ? sort : 'descricao';
     const safeOrder = order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
 
     const query = `
