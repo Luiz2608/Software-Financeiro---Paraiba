@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './TransactionsPage.css';
 import { listPessoas, createPessoa, updatePessoa, deletePessoa, activatePessoa } from '../services/api';
 
 export default function SuppliersPage() {
@@ -65,8 +66,9 @@ export default function SuppliersPage() {
     <div>
       <div className="card">
         <h2>Fornecedores</h2>
+        <div style={{ color: '#6b7280', marginBottom: 8, fontSize: 13 }}>Listagem dedicada a fornecedores. Use os filtros abaixo para refinar.</div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <input className="input" placeholder="Buscar" value={q} onChange={(e)=>setQ(e.target.value)} />
+          <input className="input" placeholder="Buscar por razão social ou CNPJ" value={q} onChange={(e)=>setQ(e.target.value)} />
           <select className="select" value={tipo} onChange={(e)=>setTipo(e.target.value)}>
             <option value="FORNECEDOR">Fornecedor</option>
             <option value="TODOS">Todos</option>
