@@ -32,7 +32,6 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/contas_app
       DB_HOST: postgres
       DB_PORT: "5432"
       DB_NAME: contas_app

@@ -12,7 +12,7 @@ export default function ClientsPage() {
 
   const buscar = async () => {
     try {
-      const data = await listPessoas({ q, tipo: 'CLIENTE', status: 'ATIVO', sort, order });
+      const data = await listPessoas({ q, tipo: 'FATURADO', status: 'ATIVO', sort, order });
       setRows(data.data || []);
     } catch (err) {
       console.error('Erro ao listar clientes:', err);
@@ -24,7 +24,7 @@ export default function ClientsPage() {
 
   const criar = async () => {
     if (!novo.razaoSocial) { alert('Informe razão social'); return; }
-    try { await createPessoa({ tipo: 'CLIENTE', ...novo }); setNovo({ razaoSocial: '', nomeFantasia: '', cnpjCpf: '' }); await buscar(); }
+    try { await createPessoa({ tipo: 'FATURADO', ...novo }); setNovo({ razaoSocial: '', nomeFantasia: '', cnpjCpf: '' }); await buscar(); }
     catch (err) { console.error(err); alert('Erro ao criar cliente'); }
   };
 

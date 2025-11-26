@@ -1,11 +1,10 @@
-FROM node:18-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
-
-COPY .env .env
+RUN npm config set registry https://registry.npmjs.org/
+RUN npm ci --only=production
 
 COPY . .
 
