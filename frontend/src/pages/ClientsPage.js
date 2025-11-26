@@ -102,10 +102,10 @@ export default function ClientsPage() {
                   <td>{r.id}</td>
                   <td>{editId === r.id ? (
                     <input className="input" value={editFields.razaoSocial} onChange={(e)=>setEditFields(s=>({...s, razaoSocial: e.target.value}))} />
-                  ) : r.razao_social}</td>
+                  ) : (r.razao_social || r.razaoSocial || r.nome || '')}</td>
                   <td>{editId === r.id ? (
                     <input className="input" value={editFields.nomeFantasia} onChange={(e)=>setEditFields(s=>({...s, nomeFantasia: e.target.value}))} />
-                  ) : (r.nome_fantasia || '')}</td>
+                  ) : (r.nome_fantasia || r.nomeFantasia || r.razao_social || r.nome || '')}</td>
                   <td>{editId === r.id ? (
                     <input className="input" value={editFields.cnpjCpf} onChange={(e)=>setEditFields(s=>({...s, cnpjCpf: e.target.value}))} />
                   ) : (r.cnpj_cpf || '')}</td>
