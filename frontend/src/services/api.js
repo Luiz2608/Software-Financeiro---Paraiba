@@ -168,15 +168,6 @@ export const agente3Consulta = async (pergunta, tipo = 'simples') => {
   return response.data;
 };
 
-export const agente3Indexar = async () => {
-  const response = await api.post('/agente3/indexar', {}, {
-    headers: {
-      'X-API-Key': window.__GEMINI_API_KEY__ || ''
-    }
-  });
-  return response.data;
-};
-
 // Contas / Movimentos
 export const listMovimentos = async (params) => {
   const response = await api.get('/contas/movimentos', { params });
