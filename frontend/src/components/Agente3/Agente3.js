@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { agente3Consulta, agente3Indexar } from '../../services/api';
+import { agente3Consulta } from '../../services/api';
 import './Agente3.css';
 
 const Agente3 = () => {
@@ -8,8 +8,7 @@ const Agente3 = () => {
     const [carregando, setCarregando] = useState(false);
     const [ragTipo, setRagTipo] = useState('simples');
     const [apiKey, setApiKey] = useState('');
-    const [indexando, setIndexando] = useState(false);
-    const [indexStatus, setIndexStatus] = useState('');
+    
 
     const fazerPergunta = async () => {
         if (!apiKey || !apiKey.trim()) return;
@@ -32,20 +31,7 @@ const Agente3 = () => {
         }
     };
 
-    const construirBase = async () => {
-        if (!apiKey || !apiKey.trim()) return;
-        setIndexando(true);
-        setIndexStatus('');
-        try {
-            window.__GEMINI_API_KEY__ = apiKey || '';
-            const r = await agente3Indexar();
-            setIndexStatus(`Base indexada: ${r.indexed || 0} documentos`);
-        } catch (e) {
-            setIndexStatus('Falha ao indexar base');
-        } finally {
-            setIndexando(false);
-        }
-    };
+    
 
     const mudarRagTipo = (novoTipo) => {
         setRagTipo(novoTipo);
@@ -86,12 +72,7 @@ const Agente3 = () => {
                         : '🧠 Busca semântica que compreende o significado e contexto da pergunta'
                     }
                 </div>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 10 }}>
-                    <button className="history-button" onClick={construirBase} disabled={indexando || !apiKey.trim()}>
-                        {indexando ? 'Indexando...' : 'Construir Base'}
-                    </button>
-                    {indexStatus && (<span style={{ color: '#2563eb' }}>{indexStatus}</span>)}
-                </div>
+                
             </div>
 
             <div className="agente3-input">
