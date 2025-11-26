@@ -52,7 +52,7 @@ exports.listar = async (req, res) => {
     }
 
     const where = filtros.length ? `WHERE ${filtros.join(' AND ')}` : '';
-    const safeSort = ['razao_social','nome_fantasia','cnpj_cpf','tipo','data_cadastro'].includes(sort.toLowerCase()) ? sort : 'razao_social';
+    const safeSort = ['id','razao_social','nome_fantasia','cnpj_cpf','tipo','data_cadastro'].includes(sort.toLowerCase()) ? sort : 'razao_social';
     const safeOrder = order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
 
     const query = `

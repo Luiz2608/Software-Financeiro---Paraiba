@@ -88,7 +88,7 @@ export default function SuppliersPage() {
           <table className="table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th onClick={()=>toggleSort('id')}>ID{sort==='id' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
                 <th onClick={()=>toggleSort('razao_social')}>Razão Social{sort==='razao_social' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
                 <th onClick={()=>toggleSort('nome_fantasia')}>Nome Fantasia{sort==='nome_fantasia' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
                 <th onClick={()=>toggleSort('cnpj_cpf')}>CNPJ/CPF{sort==='cnpj_cpf' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
