@@ -1,5 +1,7 @@
 require('dotenv').config();
 const { Client } = require('pg');
+const fs = require('fs');
+const path = require('path');
 
 function resolveHost() {
   const envHost = process.env.DB_HOST || 'localhost';
@@ -66,6 +68,8 @@ async function checkAndCreateTables() {
       console.log(`   ✅ ${table.table_name}`);
     });
     
+    await maybeSeed(client);
+
     await client.end();
   } catch (error) {
     console.error('Erro ao verificar/criar tabelas:', error);
@@ -163,6 +167,39 @@ async function createTable(client, tableName) {
   } catch (error) {
     console.error(`Erro ao criar tabela ${tableName}:`, error);
     throw error;
+  }
+}
+
+async function maybeSeed(client) {
+  try {
+    const auto = String(process.env.AUTO_SEED || '').toLowerCase() === 'true';
+    if (!auto) return;
+
+    const [{ rows: pRows }, { rows: cRows }, { rows: mRows }] = await Promise.all([
+      client.query('SELECT COUNT(*)::int AS n FROM pessoas'),
+      client.query('SELECT COUNT(*)::int AS n FROM classificacao'),
+      client.query('SELECT COUNT(*)::int AS n FROM movimentocontas'),
+    ]);
+
+    const p = pRows[0]?.n || 0;
+    const c = cRows[0]?.n || 0;
+    const m = mRows[0]?.n || 0;
+
+    if (p === 0 && c === 0 && m === 0) {
+      const seedPath = path.join(__dirname, '..', 'seed.sql');
+      if (fs.existsSync(seedPath)) {
+        console.log('🌱 Aplicando seed.sql no banco (AUTO_SEED=true)...');
+        const sql = fs.readFileSync(seedPath, 'utf8');
+        await client.query(sql);
+        console.log('✅ Seed aplicado com sucesso');
+      } else {
+        console.log('ℹ️ seed.sql não encontrado, pulando auto-seed');
+      }
+    } else {
+      console.log(`ℹ️ Auto-seed não necessário (pessoas=${p}, classificacao=${c}, movimentos=${m})`);
+    }
+  } catch (err) {
+    console.error('❌ Falha ao executar auto-seed:', err.message);
   }
 }
 
