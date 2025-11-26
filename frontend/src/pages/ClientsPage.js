@@ -25,6 +25,7 @@ export default function ClientsPage() {
   };
 
   useEffect(() => { buscar(); }, []);
+  useEffect(() => { buscar(); }, [tipo, status, sort, order]);
 
   const criar = async () => {
     if (!novo.razaoSocial) { alert('Informe razão social'); return; }
@@ -67,9 +68,9 @@ export default function ClientsPage() {
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <input className="input" placeholder="Buscar" value={q} onChange={(e)=>setQ(e.target.value)} />
           <select className="select" value={tipo} onChange={(e)=>setTipo(e.target.value)}>
-            <option value="FATURADO">Faturado</option>
-            <option value="CLIENTE">Cliente</option>
             <option value="TODOS">Todos</option>
+            <option value="CLIENTE">Cliente</option>
+            <option value="FATURADO">Faturado</option>
           </select>
           <select className="select" value={status} onChange={(e)=>setStatus(e.target.value)}>
             <option value="ATIVO">Ativo</option>
