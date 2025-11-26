@@ -161,25 +161,31 @@ function applyBasicAdjustments(jsonResult) {
 
 function extractFallbackFromText(pdfText) {
   const text = (pdfText || '').replace(/\r\n|\r/g, '\n');
-  // CNPJ
   const cnpjMatch = text.match(/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/) || text.match(/\b\d{14}\b/);
+  const cpfMatch = text.match(/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/) || text.match(/\b\d{11}\b/);
   const cnpj = cnpjMatch ? cnpjMatch[0] : 'N/A';
-  // Número da Nota
-  const notaMatch = text.match(/(nota\s*fiscal|nfe|n\.\s*\d+|número\s*da\s*nota)\s*[:#-]?\s*(\d{4,})/i);
-  const numeroNotaFiscal = notaMatch ? (notaMatch[2] || notaMatch[0].match(/\d+/)?.[0]) : 'N/A';
-  // Valor Total
-  const valorMatch = text.match(/(valor\s*total|total\s*da\s*nota|total)\s*[:\-]?\s*R?\$?\s*([\d\.,]+)/i);
-  const valorTotal = valorMatch ? normalizeNumber(valorMatch[2]) : null;
-  // Data de Emissão
-  const dataMatch = text.match(/(emiss[aã]o|data)\s*[:\-]?\s*(\d{2}\/\d{2}\/\d{4})/i);
-  const dataEmissao = dataMatch ? dataMatch[2] : new Date().toISOString().split('T')[0];
-  // Natureza da Operação
-  const naturezaMatch = text.match(/natureza\s*da\s*opera[cç][aã]o\s*[:\-]?\s*(.+)/i);
-  const naturezaOperacao = naturezaMatch ? naturezaMatch[1].split('\n')[0].trim() : 'N/A';
+  const cpf = cpfMatch ? cpfMatch[0] : 'N/A';
+  const numeroNotaFiscal = (() => {
+    const notaMatch = text.match(/(nota\s*fiscal|nfe|n\.\s*\d+|número\s*da\s*nota)\s*[:#-]?\s*(\d{4,})/i);
+    return notaMatch ? (notaMatch[2] || notaMatch[0].match(/\d+/)?.[0]) : 'N/A';
+  })();
+  const valorTotal = (() => {
+    const valorMatch = text.match(/(valor\s*total|total\s*da\s*nota|total)\s*[:\-]?\s*R?\$?\s*([\d\.,]+)/i);
+    return valorMatch ? normalizeNumber(valorMatch[2]) : null;
+  })();
+  const dataEmissao = (() => {
+    const dataMatch = text.match(/(emiss[aã]o|data)\s*[:\-]?\s*(\d{2}\/\d{2}\/\d{4})/i);
+    return dataMatch ? dataMatch[2] : new Date().toISOString().split('T')[0];
+  })();
+  const naturezaOperacao = (() => {
+    const naturezaMatch = text.match(/natureza\s*da\s*opera[cç][aã]o\s*[:\-]?\s*(.+)/i);
+    return naturezaMatch ? naturezaMatch[1].split('\n')[0].trim() : 'N/A';
+  })();
 
+  const clienteTipo = cpf !== 'N/A' ? 'PF' : (cnpj !== 'N/A' ? 'PJ' : 'PF');
   const result = {
     fornecedor: { razaoSocial: 'N/A', cnpj },
-    cliente: { nome: 'N/A', documento: 'N/A', tipo: 'PF' },
+    cliente: { nome: 'N/A', cpf, cnpj: cpf !== 'N/A' ? '' : cnpj, tipo: clienteTipo },
     numeroNotaFiscal,
     dataEmissao,
     naturezaOperacao,
@@ -188,7 +194,6 @@ function extractFallbackFromText(pdfText) {
     parcelas: [],
   };
 
-  // Ajustes básicos e determinação do tipo
   const adjusted = applyBasicAdjustments(result);
   adjusted.tipoConta = determineTipoConta(adjusted);
   return adjusted;

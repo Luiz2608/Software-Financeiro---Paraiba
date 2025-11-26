@@ -50,23 +50,26 @@ class AgenteService {
       }
 
       this.adicionarMensagem("🔍 Verificando FATURADO no banco de dados...");
-      const faturado = await databaseService.verificarFaturado(
-        dadosNota.faturado?.nomeCompleto || dadosNota.cliente?.nome,
-        dadosNota.faturado?.cpf || dadosNota.cliente?.documento
-      );
-
       const nomeFaturado = dadosNota.faturado?.nomeCompleto || dadosNota.cliente?.nome || 'N/A';
-      const documentoFaturado = dadosNota.faturado?.cpf || dadosNota.cliente?.documento || 'N/A';
+      const documentoFaturado = (
+        dadosNota.faturado?.cpf ||
+        dadosNota.cliente?.cpf ||
+        dadosNota.cliente?.cnpj ||
+        dadosNota.faturado?.cnpj ||
+        dadosNota.cliente?.documento ||
+        'N/A'
+      );
+      const faturado = await databaseService.verificarFaturado(
+        nomeFaturado,
+        documentoFaturado
+      );
       
-      let mensagemFaturado = `FATURADO:\n${nomeFaturado}\nCPF: ${documentoFaturado}\n${faturado.existe ? `EXISTE - ID: ${faturado.id}` : 'NÃO EXISTE'}`;
+      let mensagemFaturado = `FATURADO:\n${nomeFaturado}\nDOCUMENTO: ${documentoFaturado}\n${faturado.existe ? `EXISTE - ID: ${faturado.id}` : 'NÃO EXISTE'}`;
       this.adicionarMensagem(mensagemFaturado);
 
       let idFaturado = faturado.id;
       if (!faturado.existe && nomeFaturado !== 'N/A') {
-        idFaturado = await databaseService.criarFaturado(
-          nomeFaturado,
-          documentoFaturado
-        );
+        idFaturado = await databaseService.criarFaturado(nomeFaturado, documentoFaturado);
         this.adicionarMensagem(`✅ FATURADO CRIADO - ID: ${idFaturado}`);
       }
 
