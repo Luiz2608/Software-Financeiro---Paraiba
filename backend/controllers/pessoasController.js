@@ -52,11 +52,13 @@ exports.listar = async (req, res) => {
     }
 
     const where = filtros.length ? `WHERE ${filtros.join(' AND ')}` : '';
-    const safeSort = ['id','razao_social','nome_fantasia','cnpj_cpf','tipo','data_cadastro'].includes(sort.toLowerCase()) ? sort : 'razao_social';
+    const safeSort = ['id','razao_social','nome_fantasia','cnpj_cpf','endereco','telefone','email','tipo','data_cadastro'].includes(sort.toLowerCase()) ? sort : 'razao_social';
     const safeOrder = order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
 
     const query = `
-      SELECT id, tipo, razao_social, nome_fantasia, cnpj_cpf, ativo, data_cadastro,
+      SELECT id, tipo, razao_social, nome_fantasia, cnpj_cpf,
+             endereco, telefone, email,
+             ativo, data_cadastro,
              COALESCE(nome_fantasia, razao_social) AS nome
       FROM pessoas
       ${where}

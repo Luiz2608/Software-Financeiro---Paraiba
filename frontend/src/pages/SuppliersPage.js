@@ -92,13 +92,16 @@ export default function SuppliersPage() {
                 <th onClick={()=>toggleSort('razao_social')}>Razão Social{sort==='razao_social' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
                 <th onClick={()=>toggleSort('nome_fantasia')}>Nome Fantasia{sort==='nome_fantasia' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
                 <th onClick={()=>toggleSort('cnpj_cpf')}>CNPJ/CPF{sort==='cnpj_cpf' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
+                <th onClick={()=>toggleSort('endereco')}>Endereço{sort==='endereco' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
+                <th onClick={()=>toggleSort('telefone')}>Telefone{sort==='telefone' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
+                <th onClick={()=>toggleSort('email')}>Email{sort==='email' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
                 <th onClick={()=>toggleSort('data_cadastro')}>Data Cadastro{sort==='data_cadastro' ? (order==='asc' ? ' ▲' : ' ▼') : ''}</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
-                <tr><td className="empty" colSpan={6}>Nenhum fornecedor.</td></tr>
+                <tr><td className="empty" colSpan={9}>Nenhum fornecedor.</td></tr>
               ) : rows.map((r)=> (
                 <tr key={r.id}>
                   <td>{r.id}</td>
@@ -111,6 +114,9 @@ export default function SuppliersPage() {
                   <td>{editId === r.id ? (
                     <input className="input" value={editFields.cnpjCpf} onChange={(e)=>setEditFields(s=>({...s, cnpjCpf: e.target.value}))} />
                   ) : (r.cnpj_cpf || '')}</td>
+                  <td>{r.endereco || ''}</td>
+                  <td>{r.telefone || ''}</td>
+                  <td>{r.email || ''}</td>
                   <td>{r.data_cadastro ? new Date(r.data_cadastro).toLocaleString() : ''}</td>
                   <td>
                     <div className="actions">
