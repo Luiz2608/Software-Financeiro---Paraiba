@@ -4,10 +4,20 @@ const fs = require("fs");
 // Usa o Gemini para gerar embeddings
 class EmbeddingSearch {
     constructor() {
-        this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        this.model = this.genAI.getGenerativeModel({ model: "embedding-001" });
+        this.genAI = null;
+        this.model = null;
         this.docs = [];
         this.embeddings = [];
+        const key = process.env.GEMINI_API_KEY;
+        if (key) {
+            this.setApiKey(key);
+        }
+    }
+
+    setApiKey(apiKey) {
+        if (!apiKey) return;
+        this.genAI = new GoogleGenerativeAI(apiKey);
+        this.model = this.genAI.getGenerativeModel({ model: "embedding-001" });
     }
 
     async carregarBase() {
@@ -22,6 +32,11 @@ class EmbeddingSearch {
     }
 
     async gerarEmbedding(texto) {
+        if (!this.model) {
+            const key = process.env.GEMINI_API_KEY;
+            if (key) this.setApiKey(key);
+        }
+        if (!this.model) throw new Error('Modelo de embeddings não inicializado');
         const result = await this.model.embedContent(texto);
         return result.embedding.values;
     }

@@ -94,12 +94,22 @@ async function ragSimples(pergunta, apiKey) {
 }
 
 async function ragEmbeddings(pergunta, apiKey) {
-    const docs = await EmbeddingSearch.buscar(pergunta);
+    if (apiKey) EmbeddingSearch.setApiKey(apiKey);
+    let docs = await EmbeddingSearch.buscar(pergunta);
+    if (!docs || docs.length === 0) {
+        try {
+            await indexarDados(apiKey);
+            docs = await EmbeddingSearch.buscar(pergunta);
+        } catch (e) {
+            console.warn('⚠️ Falha ao indexar dados para embeddings:', e?.message);
+        }
+    }
     const resposta = await gerarResposta(pergunta, docs, apiKey);
     return { pergunta, dados: docs, resposta };
 }
 
-async function indexarDados() {
+async function indexarDados(apiKey) {
+    if (apiKey) EmbeddingSearch.setApiKey(apiKey);
     const sql = `
         SELECT mc.id, mc.tipo, mc.numero_nota_fiscal, mc.valor_total, mc.data_emissao,
                COALESCE(p.razao_social,'') AS pessoa

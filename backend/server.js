@@ -32,6 +32,17 @@ app.post('/api/agente3/perguntar', async (req, res) => {
   }
 });
 
+app.post('/api/agente3/indexar', async (req, res) => {
+  try {
+    const apiKey = req.headers['x-api-key'] || req.headers['X-API-Key'];
+    const resultado = await agente3Controller.indexarDados(apiKey);
+    res.json({ success: true, ...resultado });
+  } catch (error) {
+    console.error('❌ Erro ao indexar embeddings:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.get('/api/agente3/health', async (req, res) => {
   try {
     const health = await agente3Controller.healthCheck();

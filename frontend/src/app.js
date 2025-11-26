@@ -22,10 +22,7 @@ function Placeholder({ title, description }) {
 
 export default function App() {
   const [active, setActive] = useState('dashboard');
-  const [auth, setAuth] = useState(() => {
-    const token = localStorage.getItem('auth_token');
-    return token ? { user: 'admin' } : null;
-  });
+  const [auth, setAuth] = useState(null);
 
   if (!auth) {
     return <LoginPage onLogin={(user)=>{ setAuth(user); setActive('dashboard'); }} />;

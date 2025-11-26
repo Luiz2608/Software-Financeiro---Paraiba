@@ -10,6 +10,7 @@ const Agente3 = () => {
     const [apiKey, setApiKey] = useState('');
 
     const fazerPergunta = async () => {
+        if (!apiKey || !apiKey.trim()) return;
         if (!pergunta.trim()) return;
 
         setCarregando(true);
@@ -76,6 +77,7 @@ const Agente3 = () => {
                     placeholder="Informe sua Gemini API Key"
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
+                    className="text-input"
                     style={{ marginBottom: 8 }}
                 />
                 <textarea
@@ -88,7 +90,7 @@ const Agente3 = () => {
                     }
                     rows="3"
                 />
-                <button onClick={fazerPergunta} disabled={carregando}>
+                <button onClick={fazerPergunta} disabled={carregando || !apiKey.trim()}>
                     {carregando ? 'Processando...' : 'Perguntar'}
                 </button>
             </div>
