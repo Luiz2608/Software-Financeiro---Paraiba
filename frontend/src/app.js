@@ -68,9 +68,7 @@ export default function App() {
           <ReportsPage />
         )}
 
-        {active === 'configuracoes' && (
-          <Placeholder title="Configurações" description="Preferências e integrações do sistema (esboço)." />
-        )}
+        
       </main>
     </div>
   );

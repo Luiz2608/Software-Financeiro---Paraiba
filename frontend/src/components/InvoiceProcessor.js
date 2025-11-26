@@ -597,7 +597,7 @@ const InvoiceProcessor = () => {
             </label>
           </div>
           
-          <button type="submit" disabled={loading || !file} className="process-button">
+          <button type="submit" disabled={loading || !file || !(apiKey && apiKey.trim().length > 0)} className="process-button">
             {loading ? 'Processando...' : 'Extrair Dados'}
           </button>
         </form>

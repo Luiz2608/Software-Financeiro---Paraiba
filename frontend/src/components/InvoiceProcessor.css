@@ -39,6 +39,21 @@
   align-items: center;
 }
 
+.text-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.text-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
 .file-input-container {
   position: relative;
   width: 100%;

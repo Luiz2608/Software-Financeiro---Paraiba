@@ -10,7 +10,6 @@ const menuItems = [
   { key: 'processar_notas', label: 'Processar Notas', icon: '📄' },
   { key: 'clientes', label: 'Clientes', icon: '👤' },
   { key: 'fornecedores', label: 'Fornecedores', icon: '🏭' },
-  { key: 'configuracoes', label: 'Configurações', icon: '⚙️' },
 ];
 
 export default function Sidebar({ active, onNavigate, user, onLogout }) {
