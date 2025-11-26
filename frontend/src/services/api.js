@@ -122,6 +122,24 @@ export const deletePessoa = async (id) => {
   return response.data;
 };
 
+export const activatePessoa = async (id) => {
+  try {
+    const response = await api.put(`/pessoas/${id}/ativar`);
+    return response.data;
+  } catch (err) {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      try {
+        const alt = axios.create({ baseURL: 'http://localhost:3000/api', timeout: 15000 });
+        const response = await alt.put(`/pessoas/${id}/ativar`);
+        return response.data;
+      } catch (e) {
+        throw err;
+      }
+    }
+    throw err;
+  }
+};
+
 // Classificacao
 export const listClassificacao = async (params) => {
   const response = await api.get('/classificacao', { params });

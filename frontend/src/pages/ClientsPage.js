@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { listPessoas, createPessoa, updatePessoa, deletePessoa } from '../services/api';
+import { listPessoas, createPessoa, updatePessoa, deletePessoa, activatePessoa } from '../services/api';
 
 export default function ClientsPage() {
   const [q, setQ] = useState('');
@@ -10,10 +10,13 @@ export default function ClientsPage() {
   const [sort, setSort] = useState('razao_social');
   const [order, setOrder] = useState('asc');
   const [status, setStatus] = useState('ATIVO');
+  const [tipo, setTipo] = useState('FATURADO');
 
   const buscar = async () => {
     try {
-      const data = await listPessoas({ q, tipo: 'FATURADO', status, sort, order });
+      const params = { q, status, sort, order };
+      if (tipo && tipo !== 'TODOS') params.tipo = tipo;
+      const data = await listPessoas(params);
       setRows(data.data || []);
     } catch (err) {
       console.error('Erro ao listar clientes:', err);
@@ -45,6 +48,11 @@ export default function ClientsPage() {
     catch (err) { console.error(err); alert('Erro ao inativar'); }
   };
 
+  const ativar = async (id) => {
+    try { await activatePessoa(id); await buscar(); }
+    catch (err) { console.error(err); alert('Erro ao ativar'); }
+  };
+
   const toggleSort = (col) => {
     const nextOrder = sort === col && order === 'asc' ? 'desc' : 'asc';
     setSort(col);
@@ -58,6 +66,11 @@ export default function ClientsPage() {
         <h2>Clientes</h2>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <input className="input" placeholder="Buscar" value={q} onChange={(e)=>setQ(e.target.value)} />
+          <select className="select" value={tipo} onChange={(e)=>setTipo(e.target.value)}>
+            <option value="FATURADO">Faturado</option>
+            <option value="CLIENTE">Cliente</option>
+            <option value="TODOS">Todos</option>
+          </select>
           <select className="select" value={status} onChange={(e)=>setStatus(e.target.value)}>
             <option value="ATIVO">Ativo</option>
             <option value="INATIVO">Inativo</option>
@@ -107,7 +120,11 @@ export default function ClientsPage() {
                       ) : (
                         <button className="btn btn-primary" onClick={()=>iniciarEdicao(r)}>✏️ Editar</button>
                       )}
-                      <button className="btn btn-danger" onClick={()=>inativar(r.id)}>🗑️ Inativar</button>
+                      {r.ativo === false ? (
+                        <button className="btn btn-success" onClick={()=>ativar(r.id)}>✅ Ativar</button>
+                      ) : (
+                        <button className="btn btn-danger" onClick={()=>inativar(r.id)}>🗑️ Inativar</button>
+                      )}
                     </div>
                   </td>
                 </tr>

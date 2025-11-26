@@ -133,3 +133,19 @@ exports.excluirLogico = async (req, res) => {
     await client.end();
   }
 };
+
+// PUT /api/pessoas/:id/ativar (lógico)
+exports.ativar = async (req, res) => {
+  const { id } = req.params;
+  const client = getClient();
+  try {
+    await client.connect();
+    await client.query(`UPDATE pessoas SET ativo = TRUE WHERE id = $1`, [id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Erro ao ativar pessoa:', err);
+    res.status(500).json({ success: false, error: err.message });
+  } finally {
+    await client.end();
+  }
+};
