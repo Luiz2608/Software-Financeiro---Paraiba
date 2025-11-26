@@ -40,6 +40,11 @@ services:
       PORT: "3000"
       RUNNING_IN_DOCKER: "true"
       DOCKER: "true"
+      AUTO_SEED: "true"
+      AUTO_SEED_TOPUP: "true"
+      AUTO_SEED_TARGET_PESSOAS: "200"
+      AUTO_SEED_TARGET_CLASSIFICACAO: "50"
+      AUTO_SEED_TARGET_MOVIMENTOS: "200"
       GEMINI_MODEL: "gemini-2.5-flash"
     volumes:
       - ./backend/uploads:/app/uploads
